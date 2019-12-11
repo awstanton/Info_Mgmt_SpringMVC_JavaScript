@@ -6,6 +6,14 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>List</h1>
+        <h6>Please select an item to view </h6>
+        <form action="item" method="get">
+            <input list="items">
+            <datalist id="items">
+                <option value="item1">
+                <option value="item2">
+                <option value="item3">
+            </datalist>
+        </form>
     </body>
 </html>

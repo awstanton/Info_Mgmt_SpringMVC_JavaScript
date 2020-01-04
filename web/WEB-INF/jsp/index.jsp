@@ -10,21 +10,25 @@
     </head>
 
     <body>
-        <h6>Please select a list to view </h6>
-        <form action="list" method="get">
-            <input list="lists">
-            <datalist id="lists">
-                <option value="list1">
-                <option value="list2">
-                <option value="list3">
-            </datalist>
-        </form>
-        <c:forEach var="listOfItems" items="${listOfLists}">
-        <ol>
-            <c:forEach var="item" items="${listOfItems}">
-            <li>${item}</li>
+        <form action="simplelist" method="get">
+            <p> Please select a list to view </p>
+            <c:forEach var="list" items="${listOfLists}">
+                <li>${list}</li>
             </c:forEach>
-        </ol>
-        </c:forEach>
+        </form>
+
+        <h6>Add a new list</h6>
+        <h6>Delete a list</h6>
     </body>
 </html>
+
+
+        <!--
+            <!--c:forEach var="listOfItems" items="${listOfLists}">
+            <ol>
+                <!--c:forEach var="item" items="${listOfItems}">
+                    <li>${item}</li>
+                <--/c:forEach>
+            </ol>
+            <--/c:forEach>
+        -->

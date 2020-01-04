@@ -10,35 +10,22 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-/*
-See link to get started
-https://www.baeldung.com/spring-controllers
-*/
+import org.springframework.beans.factory.annotation.Autowired;
+import com.collection.service.SimpleService;
+import com.collection.model.SimpleItem;
+import com.collection.model.SimpleList;
 
 @Controller
 @RequestMapping(value = "/")
 public class SimpleController {
+    
+    @Autowired
+    private SimpleService simpleService;
+    
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView homePage() {
         
-        List<List<String>> listOfLists = new ArrayList<List<String>>();
-        ArrayList<String> list1 = new ArrayList<String>();
-        ArrayList<String> list2 = new ArrayList<String>();
-        ArrayList<String> list3 = new ArrayList<String>();
-        list1.add("a");
-        list1.add("b");
-        list1.add("c");
-        list2.add("d");
-        list2.add("e");
-        list2.add("f");
-        list3.add("g");
-        list3.add("h");
-        list3.add("i");
-        
-        listOfLists.add(list1);
-        listOfLists.add(list2);
-        listOfLists.add(list3);
+        List<SimpleList> listOfLists = simpleService.getAllLists();
         
         ModelAndView mv = new ModelAndView();
         
@@ -51,23 +38,36 @@ public class SimpleController {
     public String getList() {
         return "simplelist";
     }
+    
     @RequestMapping(path = "/item")
     public String getItem() {
         return "simpleitem";
     }
+    
+    @RequestMapping(path = "/list/get")
+    public ModelAndView getAllLists() {
+        
+        List<SimpleList> simpleLists = simpleService.getAllLists();
+        
+        ModelAndView mv = new ModelAndView();
+        
+        mv.setViewName("simpleLists");
+        mv.addObject("simpleLists", simpleLists);
+        
+        return mv;
+    }
+    
+    @RequestMapping(path = "/item/get")
+    public ModelAndView getAllItems() {
+        
+        List<SimpleItem> simpleItems = simpleService.getAllItems();
+        
+        ModelAndView mv = new ModelAndView();
+        
+        mv.setViewName("simpleItems");
+        mv.addObject("simpleItems", simpleItems);
+        
+        return mv;
+    }
+    
 }
-
-//    @GetMapping(value = "/simplelist/{simplelistID}")
-//    public @ResponseBody List getList(@PathVariable Integer listID) {
-//    List list = new List();
-//    return list;
-//}
-
-//    @GetMapping(value = "/simplelist/{simplelistID}")
-//    public ModelAndView getLists(@PathVariable Integer listId) {
-//        ModelAndView mv = new ModelAndView();
-//        mv.setViewName();
-//        mv.getModel().put();
-//        
-//        return mv;
-//    }

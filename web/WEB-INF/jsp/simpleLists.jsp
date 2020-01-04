@@ -1,19 +1,14 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
     <body>
-        <h6>Please select an item to view </h6>
-        <form action="item" method="get">
-            <input list="items">
-            <datalist id="items">
-                <option value="item1">
-                <option value="item2">
-                <option value="item3">
-            </datalist>
-        </form>
+        <c:forEach var="list" items="${simpleLists}">
+            <li>${list}</li>
+        </c:forEach>
     </body>
 </html>

@@ -11,21 +11,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
+    
     <body>
         <div>
-            <h3>${currentList.name}</h3>
-            <c:forEach var="item" items="${listOfItems}">
-                <li><a href="${contextPath}/showitem/${item.itemid}">${item}</a></li>
-            </c:forEach>
+            <h3>${currentItem.name}</h3><br>
+            Ranking:&nbsp<p>${currentItem.ranking}</p>
+            Description:&nbsp<p>${currentItem.description}</p>
         </div>
-        <div>
-            <p>Add New Item</p>
-            <form:form action="${contextPath}/additem/${currentList.listid}" method="post" modelAttribute="newItem">
-                <form:input path="name"/>
-                <input type="submit" value="Submit"/>
-            </form:form>
-        </div>
-        
     </body>
 </html>
-

@@ -23,7 +23,6 @@ public class SimpleService {
     
     public void addList(SimpleList newList) {
         simpleDAO.addList(newList.getName());
-        
     }
     
     public void addItem(SimpleItem newItem, int listId) {

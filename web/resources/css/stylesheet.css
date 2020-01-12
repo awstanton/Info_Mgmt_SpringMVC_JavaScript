@@ -1,0 +1,19 @@
+
+li {
+    list-style: none;
+}
+
+a {
+   color: inherit;
+   text-decoration: inherit;
+   font-size: larger;
+   line-height: 200%;
+   font-size: large;
+   font-family: sans-serif;
+}
+
+* {
+    text-align: center;
+    background-color: azure;
+    letter-spacing: 2px;
+}

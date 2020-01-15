@@ -12,7 +12,7 @@ public class FormValidator implements Validator {
     
     @Override
     public boolean supports(Class<?> clazz) {
-        return SimpleList.class.equals(clazz) || SimpleItem.class.equals(clazz);
+        return SimpleList.class.equals(clazz) || SimpleItem.class.equals(clazz)|| String.class.equals(clazz);
     }
     
     @Override

@@ -28,6 +28,7 @@
             </form:form>
             <c:if test="${not empty emptyField}">${emptyField}</c:if>
         </div>
+        <script src="${contextPath}/resources/js/events.js"></script>
     </body>
 </html>
 

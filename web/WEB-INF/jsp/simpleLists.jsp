@@ -18,8 +18,9 @@
         <div>
             <h2>Your Lists</h2>
             <c:forEach var="list" items="${listOfLists}">
-                <li><a href="${contextPath}/showlist/${list.listid}" target="_self">${list}</a></li>
+                <li><a contentEditable="false" href="${contextPath}/showlist/${list.listid}" target="_self">${list}</a></li>
             </c:forEach>
+                <!-- perhaps try text boxes here with different things like nested <a> tag -->
             
         </div>
         <div>

@@ -21,6 +21,7 @@ import com.collection.validator.FormValidator;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -118,6 +119,27 @@ public class SimpleController {
         mv.setViewName("showitem");
         mv.addObject("currentItem", currentItem);
         return mv;
+    }
+    /*
+    
+    @RequestMapping(path = "/updateListNames", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ModelAndView updateListNames(@RequestBody List list) { // should change to list of lists; check if existing can be used
+        
+        
+        
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("updateListNamesSuccess");
+        return mv;
+        
+    }
+    */
+    
+    @RequestMapping(path = "/updateListNames", method = RequestMethod.POST)
+    public void updateListName(@RequestBody String str) {
+        System.out.println(str);
+        // retrieve and parse the request body
+        // update database based on request body
+        // go to new page that lists all the changes that were made in format <old> -> <new>
     }
     
 }

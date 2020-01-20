@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import com.collection.model.*;
 import java.util.List;
+import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 @Repository
@@ -49,6 +50,21 @@ public class SimpleDAO {
     public SimpleItem getItemById(int itemId) throws EmptyResultDataAccessException {
         String sql = "SELECT * FROM items WHERE itemid = " + itemId;
         return (SimpleItem) jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleItem.class)).get(0);
+    }
+    
+    public void updateListNames(List<Integer> ids, List<String> names) {
+        String[] sqls = new String[ids.size()];
+        for (int i = 0; i < ids.size(); ++i) {
+            sqls[i] = "UPDATE lists SET name = '" + names.get(i) + "' WHERE listid = " + ids.get(i);
+        }
+        jdbcTemplate.batchUpdate(sqls);
+    }
+    
+    public boolean delList(int id) {
+        String sql1 = "DELETE FROM items WHERE listid = ?";
+        String sql2 = "DELETE FROM lists WHERE listid = ?";
+        jdbcTemplate.update(sql1, id);
+        return jdbcTemplate.update(sql2, id) > 0;
     }
     
 }

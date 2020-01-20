@@ -135,11 +135,39 @@ public class SimpleController {
     */
     
     @RequestMapping(path = "/updateListNames", method = RequestMethod.POST)
-    public void updateListName(@RequestBody String str) {
-        System.out.println(str);
-        // retrieve and parse the request body
-        // update database based on request body
+    public String updateListName(@RequestBody String str) {
+        String regex = "([\\w]*)=";
+        String[] inputs = str.split("&");
+        //System.out.println(str);
+        
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        ArrayList<String> names = new ArrayList<String>();
+        String[] lists;
+        
+        for (int i = 0; i < inputs.length; ++i) {
+            lists = inputs[i].split("=");
+            ids.add(Integer.valueOf(lists[0]));
+            names.add(lists[1]);
+            
+            simpleService.updateListNames(ids, names);
+            //System.out.println("i = " + i + ", id = " + lists[0] + ", name = " + lists[1]);
+            //split on the equals sign, then use id and name to update database
+            //inputs[i] = inputs[i].replaceFirst(regex, "");
+            //System.out.println(inputs[i]);
+        }
+        
+        return "redirect:/simpleLists";        
+        
         // go to new page that lists all the changes that were made in format <old> -> <new>
     }
+    
+    @RequestMapping(path = "/dellist/{listId}", method = RequestMethod.POST)
+    public String delList(@PathVariable("listId") int listId) {
+        simpleService.delList(listId);
+        return "redirect:/simpleLists";
+    }
+    
+    
+    
     
 }

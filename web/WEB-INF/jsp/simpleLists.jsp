@@ -18,18 +18,24 @@
         <div>
             <h2>Your Lists</h2>
             <c:forEach var="list" items="${listOfLists}">
-                <li><a contentEditable="false" href="${contextPath}/showlist/${list.listid}" target="_self">${list}</a></li>
+                <li>
+                    <a id="${list.listid}" contentEditable="false" href="${contextPath}/showlist/${list.listid}" target="_self">${list}</a>
+                    <form type="hidden" method="post" action="dellist/${list.listid}" class="inlineblock"/>
+                        <input id="delbtn${list.listid}" type="hidden" class="red" value="-"/>
+                    </form>
+                </li>
             </c:forEach>
                 <!-- perhaps try text boxes here with different things like nested <a> tag -->
             
         </div>
         <div>
-            <h6>Create New List</h6>
+            <!--<h6>Create New List</h6>-->
             <form:form action="addlist/${listId}" method="post" modelAttribute="list">
-                <form:input path="name" />
-                <input type="submit" value="Submit"/>
+                <form:input id="addbox" path="name" type="hidden"/>
+                <input id="addbtn" type="hidden" value="+" class="green"/>
             </form:form>
             <c:if test="${not empty emptyField}">${emptyField}</c:if>
+            <br>
             <script src="${contextPath}/resources/js/events.js"></script>
         </div>
     </body>

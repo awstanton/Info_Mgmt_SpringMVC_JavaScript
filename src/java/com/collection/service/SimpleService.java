@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import com.collection.model.SimpleItem;
 import com.collection.model.SimpleList;
+import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -37,5 +38,12 @@ public class SimpleService {
         return simpleDAO.getItemById(id);
     }
     
+    public void updateListNames(List<Integer> ids, List<String> names) {
+        simpleDAO.updateListNames(ids, names);
+    }
+    
+    public void delList(int id) {
+        simpleDAO.delList(id);
+    }
     
 }

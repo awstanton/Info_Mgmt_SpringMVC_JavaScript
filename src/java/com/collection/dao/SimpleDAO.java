@@ -21,25 +21,11 @@ public class SimpleDAO {
     }
     
     
-    public void addList(String name) {
-        String sql = "INSERT INTO lists VALUES (NULL,'" + name + "')";
-        jdbcTemplate.update(sql);
-    }
-    
-    public void addItem(String name, int listId) {
-        String sql = "INSERT INTO items VALUES (NULL,'" + name + "'," + listId + ",0,NULL)";
-        jdbcTemplate.update(sql);
-    }
-
+    /* Lists Page Methods */
     public List<SimpleList> getAllLists() {
         String sql = "SELECT * FROM lists";
         List<SimpleList> simpleLists = jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleList.class));
         return simpleLists;
-    }
-    public List<SimpleItem> getListItems(int listId) {
-        String sql = "SELECT * FROM items WHERE listid = " + listId;
-        List<SimpleItem> listItems = jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleItem.class));
-        return listItems;
     }
     
     public SimpleList getListById(int listId) throws EmptyResultDataAccessException {
@@ -47,9 +33,9 @@ public class SimpleDAO {
         return (SimpleList) jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleList.class)).get(0);
     }
     
-    public SimpleItem getItemById(int itemId) throws EmptyResultDataAccessException {
-        String sql = "SELECT * FROM items WHERE itemid = " + itemId;
-        return (SimpleItem) jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleItem.class)).get(0);
+    public void addList(String name) {
+        String sql = "INSERT INTO lists VALUES (NULL,'" + name + "')";
+        jdbcTemplate.update(sql);
     }
     
     public void updateListNames(List<Integer> ids, List<String> names) {
@@ -67,5 +53,35 @@ public class SimpleDAO {
         return jdbcTemplate.update(sql2, id) > 0;
     }
     
+    
+    /* Items Page Methods */
+    public List<SimpleItem> getListItems(int listId) {
+        String sql = "SELECT * FROM items WHERE listid = " + listId;
+        List<SimpleItem> listItems = jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleItem.class));
+        return listItems;
+    }
+    
+    public SimpleItem getItemById(int itemId) throws EmptyResultDataAccessException {
+        String sql = "SELECT * FROM items WHERE itemid = " + itemId;
+        return (SimpleItem) jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleItem.class)).get(0);
+    }
+    
+    public void addItem(String name, int listId) {
+        String sql = "INSERT INTO items VALUES (NULL,'" + name + "'," + listId + ",0,NULL)";
+        jdbcTemplate.update(sql);
+    }
+
+    public void updateItemNames(List<Integer> ids, List<String> names) {
+        String[] sqls = new String[ids.size()];
+        for (int i = 0; i < ids.size(); ++i) {
+            sqls[i] = "UPDATE items SET name = '" + names.get(i) + "' WHERE itemid = " + ids.get(i);
+        }
+        jdbcTemplate.batchUpdate(sqls);
+    }
+    
+    public boolean delItem(int id) {
+        String sql = "DELETE FROM items WHERE itemid = ?";
+        return jdbcTemplate.update(sql, id) > 0;
+    }
 }
 

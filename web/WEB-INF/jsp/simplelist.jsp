@@ -14,21 +14,28 @@
     </head>
     
     <body>
-        <div>
+        <div> <!-- List of Items -->
             <h3>${currentList.name}</h3>
             <c:forEach var="item" items="${listOfItems}">
-                <li><a href="${contextPath}/showitem/${item.itemid}" target="_self">${item}</a></li>
+                <li>
+                    <a id="${item.itemid}" contentEditable="false" href="${contextPath}/showitem/${item.itemid}" target="_self">${item}</a>
+                    <form type="hidden" method="post" action="${contextPath}/delitem/${currentList.listid}/${item.itemid}" class="inlineblock">
+                        <input id="delbtn${item.itemid}" type="hidden" class="red" value="-"/>
+                    </form>
+                </li>
             </c:forEach>
         </div>
-        <div>
-            <h6>Add New Item</h6>
+        <div> <!-- Add Item -->
             <form:form action="${contextPath}/additem/${currentList.listid}" method="post" modelAttribute="newItem">
-                <form:input path="name"/>
-                <input type="submit" value="Submit"/>
+                <form:input id="addbox" path="name" type="hidden" autocomplete="off"/>
+                <input id="addbtn" type="hidden" value="+" class="green"/>
             </form:form>
-            <c:if test="${not empty emptyField}">${emptyField}</c:if>
+            <c:if test="${not empty emptyField}">${emptyField}</c:if><br>
         </div>
-        <!--<script src="${contextPath}/resources/js/events.js"></script>-->
+        <div> <!-- Update Item Names Form; JS script -->
+            <form id="updateform" type="hidden" method="post" action="/SimpleSpringMVC/updateItemNames/${currentList.listid}"></form>
+            <script src="${contextPath}/resources/js/events.js"></script>
+        </div>
     </body>
 </html>
 

@@ -11,32 +11,32 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/stylesheet.css">
-        <script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.2.min.js"></script>
+        <!--<script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.2.min.js"></script>-->
     </head>
 
     <body>
-        <div>
+        <div> <!-- List of Lists -->
             <h2>Your Lists</h2>
             <c:forEach var="list" items="${listOfLists}">
                 <li>
                     <a id="${list.listid}" contentEditable="false" href="${contextPath}/showlist/${list.listid}" target="_self">${list}</a>
-                    <form type="hidden" method="post" action="dellist/${list.listid}" class="inlineblock"/>
+                    <form type="hidden" method="post" action="dellist/${list.listid}" class="inlineblock">
                         <input id="delbtn${list.listid}" type="hidden" class="red" value="-"/>
                     </form>
                 </li>
             </c:forEach>
-                <!-- perhaps try text boxes here with different things like nested <a> tag -->
-            
         </div>
-        <div>
-            <!--<h6>Create New List</h6>-->
+        <div> <!-- Add List -->
             <form:form action="addlist/${listId}" method="post" modelAttribute="list">
-                <form:input id="addbox" path="name" type="hidden"/>
+                <form:input id="addbox" path="name" type="hidden" autocomplete="off"/>
                 <input id="addbtn" type="hidden" value="+" class="green"/>
             </form:form>
-            <c:if test="${not empty emptyField}">${emptyField}</c:if>
-            <br>
+            <c:if test="${not empty emptyField}">${emptyField}</c:if><br>
+        </div>
+        <div> <!-- Update List Names Form; JS script -->
+            <form id="updateform" type="hidden" method="post" action="/SimpleSpringMVC/updateListNames"></form>
             <script src="${contextPath}/resources/js/events.js"></script>
         </div>
+            
     </body>
 </html>

@@ -1,10 +1,8 @@
 
+// list of elements to modify
 var listElements = document.querySelectorAll('a');
 
-//for (let j = 0; j < listElements.length; j++) {
-//    listElements[j].onkeydown = changeEditability;
-//}
-
+// remembers original element names
 var listElementsArray = [];
 
 for (let k = 0; k < listElements.length; k++) {
@@ -14,53 +12,55 @@ for (let k = 0; k < listElements.length; k++) {
     listElementsArray[k] = element;
 }
 
-//var listElementsArray = Array.prototype.slice.call(listElements);
-
-// ISSUE IS THAT THE OBJECTS ALL REFER TO SSAME THINGS, NEED TO FIGURE OUT WAY AROUND THIS!
-
-
-//for (let j = 0; j < listElementsArray.length; j++) {
-//    console.log(listElementsArray[j].innerHTML);
-//}
-
 document.addEventListener('keydown', changeEditability);
+
 
 function changeEditability(e) {
     if (e.keyCode === 17) {
         if (listElements.length > 0) {
-        
+            
+            // turn edit mode on
             if (listElements[0].contentEditable === "false") {
                 for (let i = 0; i < listElements.length; i++) {
                     listElements[i].contentEditable = "true";
                     document.getElementById("delbtn" + listElements[i].id).type = "submit";
                 }
             }
+            // turn edit mode off; evaluate changes to be made
             else {
-                const form = document.createElement('form');
-                    form.method = 'post';
-                    form.action = '/SimpleSpringMVC/updateListNames';
+                const form = document.getElementById('updateform');
+                
                 for (let i = 0; i < listElements.length; i++) {
+                    // turn edit mode off
                     listElements[i].contentEditable = "false";
                     document.getElementById("delbtn" + listElements[i].id).type = "hidden";
 
-                    if (listElements[i].textContent != listElementsArray[i].name) {
+                    // prepare input elements for any modified names
+                    if (listElements[i].textContent === "") {
+                        listElements[i].textContent = listElementsArray[i].name
+                    }
+                    else {
+                        if (listElements[i].textContent !== listElementsArray[i].name) {
+                            var listName = document.createElement('input');
 
-                        var listName = document.createElement('input');
-                        listName.type = 'hidden';
-                        listName.form = form;
-                        listName.name = listElementsArray[i].id;
-                        listName.value = listElements[i].innerHTML; // this is correct; this gets the updated name
+                            listName.type = 'hidden';
+                            listName.form = form;
+                            listName.name = listElementsArray[i].id;
+                            listName.value = listElements[i].innerHTML; // this is correct; this gets the updated name
 
-                        form.appendChild(listName);
+                            form.appendChild(listName);
+                        }
                     }
                 }
-                document.body.appendChild(form);
-                console.log("childElementCount = " + form.childElementCount);
 
                 if (form.childElementCount > 0)
                     form.submit();
+                while (form.lastChild)
+                    form.removeChild(form.lastChild);
             }
         }
+        
+        // toggle add button and add text box status
         let addbtn = document.getElementById('addbtn');
         let addbox = document.getElementById('addbox');
         if (addbtn.type === "hidden")
@@ -69,13 +69,14 @@ function changeEditability(e) {
             addbtn.type = "hidden";
         if (addbox.type === "hidden")
             addbox.type = "text";
-        else
+        else {
             addbox.type = "hidden";
+            addbox.value = "";
+        }
     }
 };
 
 //e.ctrlKey apparently could also work instead of e.keyCode ===17
-
 //
 //
 //window.onkeydown = function(e) {

@@ -37,7 +37,7 @@ function changeEditability(e) {
 
                     // prepare input elements for any modified names
                     if (listElements[i].textContent === "") {
-                        listElements[i].textContent = listElementsArray[i].name
+                        listElements[i].textContent = listElementsArray[i].name;
                     }
                     else {
                         if (listElements[i].textContent !== listElementsArray[i].name) {
@@ -75,6 +75,35 @@ function changeEditability(e) {
         }
     }
 };
+
+
+
+//var deleteButtons = document.querySelectorAll('input[id^="delbtn"]');
+//
+//for (const deleteButton of deleteButtons) {
+//    deleteButton.addEventListener('click', checkDelete);
+//}
+//
+//
+//function checkDelete(e) {
+//    var confirmation;
+//    if (window.location.pathname == "/SimpleSpringMVC/")
+//        if ((confirmation = window.confirm("are you sure you want to delete this list?"))) {
+//            document.getElementById("delform").reset();
+//            console.log(document.getElementById("delform").target);
+//            console.log("confirmation=" + confirmation);
+//            alert();
+//        }
+//            
+////    console.log(window.location.href);
+////    console.log(window.document.title);
+////    console.log(window.document.head);
+////    console.log(window.document.URL);
+////    console.log(window.name);
+////    alert();
+//}
+
+
 
 //e.ctrlKey apparently could also work instead of e.keyCode ===17
 //

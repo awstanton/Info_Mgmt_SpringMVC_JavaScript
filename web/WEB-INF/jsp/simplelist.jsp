@@ -18,7 +18,9 @@
             <h3>${currentList.name}</h3>
             <c:forEach var="item" items="${listOfItems}">
                 <li>
+                    <!-- Interactive List Name -->
                     <a id="${item.itemid}" contentEditable="false" href="${contextPath}/showitem/${item.itemid}" target="_self">${item}</a>
+                    <!-- Delete List -->
                     <form type="hidden" method="post" action="${contextPath}/delitem/${currentList.listid}/${item.itemid}" class="inlineblock">
                         <input id="delbtn${item.itemid}" type="hidden" class="red" value="-"/>
                     </form>
@@ -30,7 +32,11 @@
                 <form:input id="addbox" path="name" type="hidden" autocomplete="off"/>
                 <input id="addbtn" type="hidden" value="+" class="green"/>
             </form:form>
-            <c:if test="${not empty emptyField}">${emptyField}</c:if><br>
+            <c:choose>
+                <c:when test="${not empty emptyField}">${emptyField}</c:when>
+                <c:when test="${not empty tooLong}">${tooLong}</c:when>
+                <c:when test="${not empty duplicateField}">${duplicateField}</c:when>
+            </c:choose>
         </div>
         <div> <!-- Update Item Names Form; JS script -->
             <form id="updateform" type="hidden" method="post" action="/SimpleSpringMVC/updateItemNames/${currentList.listid}"></form>

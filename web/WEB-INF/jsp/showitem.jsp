@@ -17,6 +17,12 @@
             <h3>${currentItem.name}</h3><br>
             Ranking:&nbsp<p>${currentItem.ranking}</p>
             Description:&nbsp<p>${currentItem.description}</p>
+            <!--
+            for each property, if it is not hidden, display its name and value
+            
+            
+            
+            -->
         </div>
     </body>
 </html>

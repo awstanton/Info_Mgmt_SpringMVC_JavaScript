@@ -23,10 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.apache.log4j.Logger;
+
 
 @Controller
 @RequestMapping(value = "/")
 public class SimpleController {
+    
+    private static final Logger logger = Logger.getLogger(SimpleController.class);
     
     @Autowired
     private SimpleService simpleService;
@@ -34,6 +38,7 @@ public class SimpleController {
     @Autowired
     private FormValidator formValidator;
     
+    //@InitBinder("name")
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(formValidator);
@@ -43,7 +48,8 @@ public class SimpleController {
     /* Handlers for Lists Page */
     @RequestMapping(method = RequestMethod.GET, path = "/")
     public ModelAndView home() {
-        
+        logger.debug("debug");
+        logger.info("info");
         SimpleList emptyList = new SimpleList(); // is this required? if so, why?
         
         List<SimpleList> listOfLists = simpleService.getAllLists();
@@ -79,7 +85,9 @@ public class SimpleController {
         if (!result.hasErrors())
             simpleService.addList(newList);
         else
-            redirectAttributes.addFlashAttribute("emptyField", "name must be specified");
+            formValidator.updateModel(redirectAttributes);
+//        else
+//            redirectAttributes.addFlashAttribute("emptyField", "name must be specified");
         
         return "redirect:/";
     }
@@ -117,6 +125,9 @@ public class SimpleController {
         
         SimpleItem currentItem = simpleService.getItemById(itemId);
         
+        // parse currentItem's attribute/value list and add the array as string values to ModelAndView
+        
+        
         ModelAndView mv = new ModelAndView();
         
         mv.setViewName("showitem");
@@ -125,12 +136,13 @@ public class SimpleController {
     }
     
     @RequestMapping(path = "/additem/{listId}", method = RequestMethod.POST)
-    public String addItem(@PathVariable("listId") int listId, @ModelAttribute("newItem") @Validated SimpleItem newItem, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String addItem(@PathVariable("listId") int listId, @ModelAttribute("newItem") @Validated SimpleItem newItem, BindingResult result, final RedirectAttributes redirectAttributes) {
         
         if (!result.hasErrors())
             simpleService.addItem(newItem, listId);
         else
-            redirectAttributes.addFlashAttribute("emptyField", "name must be specified");
+            formValidator.updateModel(redirectAttributes);
+//            
         
         return "redirect:/showlist/" + listId;
     }
@@ -160,6 +172,24 @@ public class SimpleController {
         simpleService.delItem(itemId);
         return "redirect:/showlist/" + listId;
     }
+    
+    
+    /*
+    editDescription
+    
+    editRank
+    
+    editAttributesOrValues
+    
+    
+    
+    */
+    
+    
+    
+    
+    
+    
 }
 
 

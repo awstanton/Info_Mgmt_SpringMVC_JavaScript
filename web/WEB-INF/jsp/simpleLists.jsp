@@ -19,8 +19,10 @@
             <h2>Your Lists</h2>
             <c:forEach var="list" items="${listOfLists}">
                 <li>
+                    <!-- Interactive List Name -->
                     <a id="${list.listid}" contentEditable="false" href="${contextPath}/showlist/${list.listid}" target="_self">${list}</a>
-                    <form type="hidden" method="post" action="dellist/${list.listid}" class="inlineblock">
+                    <!-- Delete List --> <!-- Note: id only used in commented out part of javascript -->
+                    <form id="delform" type="hidden" method="post" action="dellist/${list.listid}" class="inlineblock">
                         <input id="delbtn${list.listid}" type="hidden" class="red" value="-"/>
                     </form>
                 </li>
@@ -28,10 +30,15 @@
         </div>
         <div> <!-- Add List -->
             <form:form action="addlist/${listId}" method="post" modelAttribute="list">
+                <form:errors path="name"/>
                 <form:input id="addbox" path="name" type="hidden" autocomplete="off"/>
-                <input id="addbtn" type="hidden" value="+" class="green"/>
+                <input id="addbtn" type="hidden" value="+" class="green"/><br>
             </form:form>
-            <c:if test="${not empty emptyField}">${emptyField}</c:if><br>
+            <c:choose>
+                <c:when test="${not empty emptyField}">${emptyField}</c:when>
+                <c:when test="${not empty tooLong}">${tooLong}</c:when>
+                <c:when test="${not empty duplicateField}">${duplicateField}</c:when>
+            </c:choose>
         </div>
         <div> <!-- Update List Names Form; JS script -->
             <form id="updateform" type="hidden" method="post" action="/SimpleSpringMVC/updateListNames"></form>

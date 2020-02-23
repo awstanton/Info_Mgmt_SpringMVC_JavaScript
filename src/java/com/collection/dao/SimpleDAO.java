@@ -83,5 +83,16 @@ public class SimpleDAO {
         String sql = "DELETE FROM items WHERE itemid = ?";
         return jdbcTemplate.update(sql, id) > 0;
     }
+    
+    public int getNextListId() {
+        String sql = "SELECT MAX(listId) FROM lists";
+        return (int) jdbcTemplate.queryForObject(sql, Integer.class) + 1;
+    }
+    
+    public int getNextItemId() {
+        String sql = "SELECT MAX(itemId) FROM items";
+        return (int) jdbcTemplate.queryForObject(sql, Integer.class) + 1;
+    }
+    
 }
 

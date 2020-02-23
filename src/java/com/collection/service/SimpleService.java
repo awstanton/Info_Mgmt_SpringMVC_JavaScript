@@ -56,4 +56,12 @@ public class SimpleService {
     public void delItem(int id) {
         simpleDAO.delItem(id);
     }
+    
+    public int getNextListId() {
+        return simpleDAO.getNextListId();
+    }
+    
+    public int getNextItemId() {
+        return simpleDAO.getNextItemId();
+    }
 }

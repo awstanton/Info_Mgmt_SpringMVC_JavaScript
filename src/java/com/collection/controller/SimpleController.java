@@ -21,6 +21,8 @@ import com.collection.validator.FormValidator;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import javax.annotation.PostConstruct;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.apache.log4j.Logger;
@@ -31,6 +33,13 @@ import org.apache.log4j.Logger;
 public class SimpleController {
     
     private static final Logger logger = Logger.getLogger(SimpleController.class);
+    
+    private static HashMap<Integer,SimpleList> lists = new HashMap<>();
+    private static HashMap<Integer,SimpleItem> items = new HashMap<>();
+    
+    private static int nextListId;
+    
+    private static int nextItemId;
     
     @Autowired
     private SimpleService simpleService;
@@ -44,15 +53,33 @@ public class SimpleController {
         binder.setValidator(formValidator);
     }
     
+    @PostConstruct
+    public void init() {
+        List<SimpleList> listOfLists = simpleService.getAllLists();
+        for (SimpleList list : listOfLists) {
+            lists.put(list.getListid(), list);
+            List<SimpleItem> listOfItems = simpleService.getListItems(list.getListid());
+            for (SimpleItem item : listOfItems) {
+                items.put(item.getItemid(), item);
+            }
+        }
+        nextListId = simpleService.getNextListId();
+        nextItemId = simpleService.getNextItemId();
+    }
     
     /* Handlers for Lists Page */
     @RequestMapping(method = RequestMethod.GET, path = "/")
     public ModelAndView home() {
-        logger.debug("debug");
-        logger.info("info");
+        logger.debug("nextListId = " + nextListId);
+        logger.debug("nextItemId = " + nextItemId);
+        
         SimpleList emptyList = new SimpleList(); // is this required? if so, why?
         
-        List<SimpleList> listOfLists = simpleService.getAllLists();
+//      List<SimpleList> listOfLists = simpleService.getAllLists();
+        List<SimpleList> listOfLists = new ArrayList<>();
+        for (SimpleList list : lists.values()) {
+            listOfLists.add(list);
+        }
         
         ModelAndView mv = new ModelAndView();
         
@@ -67,8 +94,17 @@ public class SimpleController {
         
         SimpleItem newItem = new SimpleItem();
         
-        SimpleList currentList = simpleService.getListById(id);
-        List<SimpleItem> listOfItems = simpleService.getListItems(id);
+//        SimpleList currentList = simpleService.getListById(id);
+//        List<SimpleItem> listOfItems = simpleService.getListItems(id);
+        SimpleList currentList = lists.get(id);
+        List<SimpleItem> listOfItems = new ArrayList<>();
+        System.out.println("id = " + id);
+        for (SimpleItem item : items.values()) {
+            System.out.println("item listid = " + item.getListid() + ", item name = " + item.getName());
+            if (item.getListid() == id) {
+                listOfItems.add(item);
+            }
+        }
 
         ModelAndView mv = new ModelAndView();
         
@@ -82,8 +118,11 @@ public class SimpleController {
     @RequestMapping(path = "/addlist", method = RequestMethod.POST)
     public String addList(@ModelAttribute("list") @Validated SimpleList newList, BindingResult result, final RedirectAttributes redirectAttributes) {
         
-        if (!result.hasErrors())
+        if (!result.hasErrors()) {
             simpleService.addList(newList);
+            newList.setListid(nextListId++);
+            lists.put(newList.getListid(), newList);
+        }
         else
             formValidator.updateModel(redirectAttributes);
 //        else
@@ -93,21 +132,26 @@ public class SimpleController {
     }
     
     @RequestMapping(path = "/updateListNames", method = RequestMethod.POST)
-    public String updateListName(@RequestBody String str) {
+    public String updateListNames(@RequestBody String str) {
         //String regex = "([\\w]*)=";
         String[] inputs = str.split("&");
         
-        ArrayList<Integer> ids = new ArrayList<Integer>();
-        ArrayList<String> names = new ArrayList<String>();
-        String[] lists;
+        ArrayList<Integer> ids = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
+        String[] listNames;
         
         for (int i = 0; i < inputs.length; ++i) {
-            lists = inputs[i].split("=");
-            ids.add(Integer.valueOf(lists[0]));
-            names.add(lists[1].replaceAll("[+]"," "));
+            listNames = inputs[i].split("=");
+            ids.add(Integer.valueOf(listNames[0]));
+            names.add(listNames[1].replaceAll("[+]"," "));
             
-            simpleService.updateListNames(ids, names);
+
+            
         }
+        for (int i = 0; i < inputs.length; ++i) {
+            lists.get(ids.get(i)).setName(names.get(i));
+        }
+        simpleService.updateListNames(ids, names);
         
         return "redirect:/";        
     }
@@ -115,6 +159,7 @@ public class SimpleController {
     @RequestMapping(path = "/dellist/{listId}", method = RequestMethod.POST)
     public String delList(@PathVariable("listId") int listId) {
         simpleService.delList(listId);
+        lists.remove(listId);
         return "redirect:/";
     }
     
@@ -123,10 +168,10 @@ public class SimpleController {
     @RequestMapping(path = "/showitem/{itemId}", method = RequestMethod.GET)
     public ModelAndView showItem(@PathVariable("itemId") int itemId) {
         
-        SimpleItem currentItem = simpleService.getItemById(itemId);
+//        SimpleItem currentItem = simpleService.getItemById(itemId);
+        SimpleItem currentItem = items.get(itemId);
         
         // parse currentItem's attribute/value list and add the array as string values to ModelAndView
-        
         
         ModelAndView mv = new ModelAndView();
         
@@ -138,31 +183,38 @@ public class SimpleController {
     @RequestMapping(path = "/additem/{listId}", method = RequestMethod.POST)
     public String addItem(@PathVariable("listId") int listId, @ModelAttribute("newItem") @Validated SimpleItem newItem, BindingResult result, final RedirectAttributes redirectAttributes) {
         
-        if (!result.hasErrors())
+        if (!result.hasErrors()) {
             simpleService.addItem(newItem, listId);
+            newItem.setListid(listId);
+            newItem.setItemid(nextItemId++);
+            items.put(newItem.getItemid(), newItem);
+        }
         else
             formValidator.updateModel(redirectAttributes);
-//            
         
         return "redirect:/showlist/" + listId;
     }
     
     @RequestMapping(path = "/updateItemNames/{listId}", method = RequestMethod.POST)
-    public String updateItemName(@PathVariable("listId") int listId, @RequestBody String str) {
+    public String updateItemNames(@PathVariable("listId") int listId, @RequestBody String str) {
         //String regex = "([\\w]*)=";
         String[] inputs = str.split("&");
         
-        ArrayList<Integer> ids = new ArrayList<Integer>();
-        ArrayList<String> names = new ArrayList<String>();
-        String[] items;
+        ArrayList<Integer> ids = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
+        String[] itemNames;
         
         for (int i = 0; i < inputs.length; ++i) {
-            items = inputs[i].split("=");
-            ids.add(Integer.valueOf(items[0]));
-            names.add(items[1].replaceAll("[+]"," "));
+            itemNames = inputs[i].split("=");
+            ids.add(Integer.valueOf(itemNames[0]));
+            names.add(itemNames[1].replaceAll("[+]"," "));
             
-            simpleService.updateItemNames(ids, names);
-        }        
+            
+        }
+        simpleService.updateItemNames(ids, names);
+        for (int i = 0; i < inputs.length; ++i) {
+            items.get(ids.get(i)).setName(names.get(i));
+        }
         
         return "redirect:/showlist/" + listId;
     }
@@ -170,6 +222,7 @@ public class SimpleController {
     @RequestMapping(path = "/delitem/{listId}/{itemId}", method = RequestMethod.POST)
     public String delItem(@PathVariable("listId") int listId, @PathVariable("itemId") int itemId) {
         simpleService.delItem(itemId);
+        items.remove(itemId);
         return "redirect:/showlist/" + listId;
     }
     
@@ -184,11 +237,6 @@ public class SimpleController {
     
     
     */
-    
-    
-    
-    
-    
     
 }
 

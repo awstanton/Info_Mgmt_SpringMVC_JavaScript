@@ -6,6 +6,9 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import com.collection.model.SimpleItem;
 import com.collection.model.SimpleList;
+import com.collection.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -15,6 +18,10 @@ public class FormValidator implements Validator {
     private boolean empty;
     private boolean tooLong;
     private boolean duplicate;
+    
+    @Autowired
+    @Qualifier("util")
+    private Util util;
     
     @Override
     public boolean supports(Class<?> clazz) {
@@ -39,6 +46,13 @@ public class FormValidator implements Validator {
                 errors.rejectValue("name", "NotEmpty.SimpleList.name");
 //                  System.out.println("length error SimpleList");
                 empty = true;
+            }
+            for (SimpleList list : util.getLists().values()) {
+                if (((SimpleList) target).getName().equals(list.getName())) {
+                    System.out.println("duplicate found!");
+                    errors.rejectValue("name", "Duplicate.SimpleList.name");
+                    duplicate = true;
+                }
             }
         }
         else if (target.getClass().getName().equals("com.collection.model.SimpleItem")) {

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.collection.service.SimpleService;
 import com.collection.model.SimpleItem;
 import com.collection.model.SimpleList;
+import com.collection.util.Util;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -26,6 +27,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 
 @Controller
@@ -33,13 +35,10 @@ import org.apache.log4j.Logger;
 public class SimpleController {
     
     private static final Logger logger = Logger.getLogger(SimpleController.class);
-    
-    private static HashMap<Integer,SimpleList> lists = new HashMap<>();
-    private static HashMap<Integer,SimpleItem> items = new HashMap<>();
-    
-    private static int nextListId;
-    
-    private static int nextItemId;
+       
+    @Autowired
+    @Qualifier("util")
+    private Util util;
     
     @Autowired
     private SimpleService simpleService;
@@ -57,27 +56,29 @@ public class SimpleController {
     public void init() {
         List<SimpleList> listOfLists = simpleService.getAllLists();
         for (SimpleList list : listOfLists) {
-            lists.put(list.getListid(), list);
+            util.getLists().put(list.getListid(), list); // to be replaced
             List<SimpleItem> listOfItems = simpleService.getListItems(list.getListid());
             for (SimpleItem item : listOfItems) {
-                items.put(item.getItemid(), item);
+                util.getItems().put(item.getItemid(), item); // to be replaced
             }
         }
-        nextListId = simpleService.getNextListId();
-        nextItemId = simpleService.getNextItemId();
+        util.setNextListId(simpleService.getNextListId()); // to be replaced
+        util.setNextItemId(simpleService.getNextItemId()); // to be replaced
     }
     
     /* Handlers for Lists Page */
     @RequestMapping(method = RequestMethod.GET, path = "/")
     public ModelAndView home() {
-        logger.debug("nextListId = " + nextListId);
-        logger.debug("nextItemId = " + nextItemId);
+//        logger.debug("nextListId = " + nextListId);
+//        logger.debug("nextItemId = " + nextItemId);
         
         SimpleList emptyList = new SimpleList(); // is this required? if so, why?
         
 //      List<SimpleList> listOfLists = simpleService.getAllLists();
         List<SimpleList> listOfLists = new ArrayList<>();
-        for (SimpleList list : lists.values()) {
+        System.out.println("lists size = " + util.getLists().size());
+        System.out.println("items size = " + util.getItems().size());
+        for (SimpleList list : util.getLists().values()) { // to be replaced
             listOfLists.add(list);
         }
         
@@ -96,11 +97,11 @@ public class SimpleController {
         
 //        SimpleList currentList = simpleService.getListById(id);
 //        List<SimpleItem> listOfItems = simpleService.getListItems(id);
-        SimpleList currentList = lists.get(id);
+        SimpleList currentList = util.getLists().get(id);  // to be replaced
         List<SimpleItem> listOfItems = new ArrayList<>();
-        System.out.println("id = " + id);
-        for (SimpleItem item : items.values()) {
-            System.out.println("item listid = " + item.getListid() + ", item name = " + item.getName());
+//        System.out.println("id = " + id);
+        for (SimpleItem item : util.getItems().values()) { // to be replaced
+//            System.out.println("item listid = " + item.getListid() + ", item name = " + item.getName());
             if (item.getListid() == id) {
                 listOfItems.add(item);
             }
@@ -118,10 +119,10 @@ public class SimpleController {
     @RequestMapping(path = "/addlist", method = RequestMethod.POST)
     public String addList(@ModelAttribute("list") @Validated SimpleList newList, BindingResult result, final RedirectAttributes redirectAttributes) {
         
-        if (!result.hasErrors()) {
+        if (!result.hasErrors() && !(util.getLists().containsKey(newList.getListid()))) { // to be replaced
             simpleService.addList(newList);
-            newList.setListid(nextListId++);
-            lists.put(newList.getListid(), newList);
+            newList.setListid(util.postIncrNextListId()); // to be replaced
+            util.getLists().put(newList.getListid(), newList); // to be replaced
         }
         else
             formValidator.updateModel(redirectAttributes);
@@ -144,12 +145,9 @@ public class SimpleController {
             listNames = inputs[i].split("=");
             ids.add(Integer.valueOf(listNames[0]));
             names.add(listNames[1].replaceAll("[+]"," "));
-            
-
-            
         }
         for (int i = 0; i < inputs.length; ++i) {
-            lists.get(ids.get(i)).setName(names.get(i));
+            util.getLists().get(ids.get(i)).setName(names.get(i)); // to be replaced
         }
         simpleService.updateListNames(ids, names);
         
@@ -159,7 +157,7 @@ public class SimpleController {
     @RequestMapping(path = "/dellist/{listId}", method = RequestMethod.POST)
     public String delList(@PathVariable("listId") int listId) {
         simpleService.delList(listId);
-        lists.remove(listId);
+        util.getLists().remove(listId); // to be replaced
         return "redirect:/";
     }
     
@@ -169,7 +167,7 @@ public class SimpleController {
     public ModelAndView showItem(@PathVariable("itemId") int itemId) {
         
 //        SimpleItem currentItem = simpleService.getItemById(itemId);
-        SimpleItem currentItem = items.get(itemId);
+        SimpleItem currentItem = util.getItems().get(itemId); // to be replaced
         
         // parse currentItem's attribute/value list and add the array as string values to ModelAndView
         
@@ -185,9 +183,9 @@ public class SimpleController {
         
         if (!result.hasErrors()) {
             simpleService.addItem(newItem, listId);
-            newItem.setListid(listId);
-            newItem.setItemid(nextItemId++);
-            items.put(newItem.getItemid(), newItem);
+            newItem.setListid(listId); // to be replaced
+            newItem.setItemid(util.postIncrNextItemId()); // to be replaced
+            util.getItems().put(newItem.getItemid(), newItem); // to be replaced
         }
         else
             formValidator.updateModel(redirectAttributes);
@@ -208,12 +206,10 @@ public class SimpleController {
             itemNames = inputs[i].split("=");
             ids.add(Integer.valueOf(itemNames[0]));
             names.add(itemNames[1].replaceAll("[+]"," "));
-            
-            
         }
         simpleService.updateItemNames(ids, names);
         for (int i = 0; i < inputs.length; ++i) {
-            items.get(ids.get(i)).setName(names.get(i));
+            util.getItems().get(ids.get(i)).setName(names.get(i)); // to be replaced
         }
         
         return "redirect:/showlist/" + listId;
@@ -222,7 +218,7 @@ public class SimpleController {
     @RequestMapping(path = "/delitem/{listId}/{itemId}", method = RequestMethod.POST)
     public String delItem(@PathVariable("listId") int listId, @PathVariable("itemId") int itemId) {
         simpleService.delItem(itemId);
-        items.remove(itemId);
+        util.getItems().remove(itemId); // to be replaced
         return "redirect:/showlist/" + listId;
     }
     
@@ -233,9 +229,6 @@ public class SimpleController {
     editRank
     
     editAttributesOrValues
-    
-    
-    
     */
     
 }

@@ -3,6 +3,7 @@ package com.collection.util;
 
 import com.collection.model.SimpleItem;
 import com.collection.model.SimpleList;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,9 +17,9 @@ public class Util {
     
     private int nextListId;
     private int nextItemId;
-
+    
     public Util() {
-        System.out.println("util constructor called");
+//        System.out.println("util constructor called");
         lists = new HashMap<>();
         items = new HashMap<>();
     }
@@ -57,4 +58,19 @@ public class Util {
     public int postIncrNextItemId() {
         return nextItemId++;
     }
+    
+//    public ArrayList<String> getInfoAttributes() {
+//        
+//        return lists.values();
+//    }
+    
+    public ArrayList<String> getOutlineFieldsByListId(int listId) {
+        return lists.get(listId).getOutline();
+    }
+    
+    public ArrayList<String> getInfoAttributesByItemId(int itemId) {
+        return items.get(itemId).getInfo();
+    }
+    
+
 }

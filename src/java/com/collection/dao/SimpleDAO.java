@@ -9,6 +9,8 @@ import com.collection.model.*;
 import java.util.List;
 import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
+import com.collection.util.ListRowMapper;
+import com.collection.util.ItemRowMapper;
 
 @Repository
 public class SimpleDAO {
@@ -24,17 +26,17 @@ public class SimpleDAO {
     /* Lists Page Methods */
     public List<SimpleList> getAllLists() {
         String sql = "SELECT * FROM lists";
-        List<SimpleList> simpleLists = jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleList.class));
+        List<SimpleList> simpleLists = jdbcTemplate.query(sql, new ListRowMapper());
         return simpleLists;
     }
     
     public SimpleList getListById(int listId) throws EmptyResultDataAccessException {
         String sql = "SELECT * FROM lists WHERE listid = " + listId;
-        return (SimpleList) jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleList.class)).get(0);
+        return (SimpleList) jdbcTemplate.query(sql, new ListRowMapper()).get(0);
     }
     
     public void addList(String name) {
-        String sql = "INSERT INTO lists VALUES (NULL,'" + name + "')";
+        String sql = "INSERT INTO lists VALUES (NULL,'" + name + "','')"; // ADDED EMPTY ITEM OUTLINE
         jdbcTemplate.update(sql);
     }
     
@@ -57,17 +59,17 @@ public class SimpleDAO {
     /* Items Page Methods */
     public List<SimpleItem> getListItems(int listId) {
         String sql = "SELECT * FROM items WHERE listid = " + listId;
-        List<SimpleItem> listItems = jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleItem.class));
+        List<SimpleItem> listItems = jdbcTemplate.query(sql, new ItemRowMapper());
         return listItems;
     }
     
     public SimpleItem getItemById(int itemId) throws EmptyResultDataAccessException {
         String sql = "SELECT * FROM items WHERE itemid = " + itemId;
-        return (SimpleItem) jdbcTemplate.query(sql, new BeanPropertyRowMapper(SimpleItem.class)).get(0);
+        return (SimpleItem) jdbcTemplate.query(sql, new ItemRowMapper()).get(0);
     }
     
     public void addItem(String name, int listId) {
-        String sql = "INSERT INTO items VALUES (NULL,'" + name + "'," + listId + ",0,NULL)";
+        String sql = "INSERT INTO items VALUES (NULL,'" + name + "'," + listId + ",0,'')"; // ADDED EMPTY ITEM INFO
         jdbcTemplate.update(sql);
     }
 
@@ -94,5 +96,24 @@ public class SimpleDAO {
         return (int) jdbcTemplate.queryForObject(sql, Integer.class) + 1;
     }
     
+    public boolean updateOutline(int listId, String outline) {
+        String sql = "UPDATE lists SET itemOutline = '" + outline + "' WHERE listid = " + listId;
+        return jdbcTemplate.update(sql) > 0;
+    }
+    
+    public boolean updateItemInfo(int itemId, String info) {
+        String sql = "UPDATE items SET info = '" + info + "' WHERE itemid = " + itemId;
+        return jdbcTemplate.update(sql) > 0;
+    }
+    
+    public String getOutline(int listId) {
+        String sql = "SELECT itemOutline FROM lists WHERE listid = " + listId;
+        return jdbcTemplate.queryForObject(sql, String.class);
+    }
+    
+    public String getItemInfo(int itemId) {
+        String sql = "SELECT info FROM items WHERE itemid = " + itemId;
+        return jdbcTemplate.queryForObject(sql, String.class);
+    }
 }
 

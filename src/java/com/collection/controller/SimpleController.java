@@ -69,15 +69,12 @@ public class SimpleController {
     /* Handlers for Lists Page */
     @RequestMapping(method = RequestMethod.GET, path = "/")
     public ModelAndView home() {
-//        logger.debug("nextListId = " + nextListId);
-//        logger.debug("nextItemId = " + nextItemId);
-        
         SimpleList emptyList = new SimpleList(); // is this required? if so, why?
         
 //      List<SimpleList> listOfLists = simpleService.getAllLists();
         List<SimpleList> listOfLists = new ArrayList<>();
-        System.out.println("lists size = " + util.getLists().size());
-        System.out.println("items size = " + util.getItems().size());
+//        System.out.println("lists size = " + util.getLists().size());
+//        System.out.println("items size = " + util.getItems().size());
         for (SimpleList list : util.getLists().values()) { // to be replaced
             listOfLists.add(list);
         }
@@ -95,11 +92,10 @@ public class SimpleController {
         
         SimpleItem newItem = new SimpleItem();
         
-//        SimpleList currentList = simpleService.getListById(id);
-//        List<SimpleItem> listOfItems = simpleService.getListItems(id);
         SimpleList currentList = util.getLists().get(id);  // to be replaced
         List<SimpleItem> listOfItems = new ArrayList<>();
 //        System.out.println("id = " + id);
+
         for (SimpleItem item : util.getItems().values()) { // to be replaced
 //            System.out.println("item listid = " + item.getListid() + ", item name = " + item.getName());
             if (item.getListid() == id) {
@@ -120,14 +116,12 @@ public class SimpleController {
     public String addList(@ModelAttribute("list") @Validated SimpleList newList, BindingResult result, final RedirectAttributes redirectAttributes) {
         
         if (!result.hasErrors() && !(util.getLists().containsKey(newList.getListid()))) { // to be replaced
-            simpleService.addList(newList);
+            simpleService.addList(newList.getName());
             newList.setListid(util.postIncrNextListId()); // to be replaced
             util.getLists().put(newList.getListid(), newList); // to be replaced
         }
         else
             formValidator.updateModel(redirectAttributes);
-//        else
-//            redirectAttributes.addFlashAttribute("emptyField", "name must be specified");
         
         return "redirect:/";
     }
@@ -169,6 +163,10 @@ public class SimpleController {
 //        SimpleItem currentItem = simpleService.getItemById(itemId);
         SimpleItem currentItem = util.getItems().get(itemId); // to be replaced
         
+        // GET LIST OUTLINE USING THE LISTID
+        // GET ITEM ATTRIBUTES
+        // COMBINE THE OUTLINE AND ATTRIBUTES AND ADD TO MODEL
+        
         // parse currentItem's attribute/value list and add the array as string values to ModelAndView
         
         ModelAndView mv = new ModelAndView();
@@ -182,7 +180,7 @@ public class SimpleController {
     public String addItem(@PathVariable("listId") int listId, @ModelAttribute("newItem") @Validated SimpleItem newItem, BindingResult result, final RedirectAttributes redirectAttributes) {
         
         if (!result.hasErrors()) {
-            simpleService.addItem(newItem, listId);
+            simpleService.addItem(newItem.getName(), listId);
             newItem.setListid(listId); // to be replaced
             newItem.setItemid(util.postIncrNextItemId()); // to be replaced
             util.getItems().put(newItem.getItemid(), newItem); // to be replaced
@@ -221,15 +219,26 @@ public class SimpleController {
         util.getItems().remove(itemId); // to be replaced
         return "redirect:/showlist/" + listId;
     }
-    
-    
     /*
-    editDescription
+    @RequestMapping(path = "/updateOutline", method = RequestMethod.POST)
+    public String updateOutline() {
+        simpleService.updateOutline(listid, outline);
+        util.getLists().get(listid).setOutline(outline);
+        
+    }
     
-    editRank
-    
-    editAttributesOrValues
+    @RequestMapping(path = "/updateItemInfo", method = RequestMethod.POST)
+    public String updateItemInfo() {
+        simpleService.updateItemInfo(itemid, info);
+        util.getItems().get(itemid).setInfo(info);
+        
+    }
     */
+    
+    
+    
+    
+    
     
 }
 

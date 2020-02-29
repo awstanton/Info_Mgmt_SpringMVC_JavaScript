@@ -76,7 +76,11 @@ function changeEditability(e) {
     }
 };
 
-
+function createOutline() {
+    let outlineList = document.getElementById("outlineList");
+    
+    
+};
 
 //var deleteButtons = document.querySelectorAll('input[id^="delbtn"]');
 //

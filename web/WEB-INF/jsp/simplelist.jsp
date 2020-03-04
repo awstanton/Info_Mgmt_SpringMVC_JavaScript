@@ -38,6 +38,13 @@
                 <c:when test="${not empty duplicateField}">${duplicateField}</c:when>
             </c:choose>
         </div>
+            <div style="border:1px solid black;width:200px">
+<!--                <ol>-->
+                    <c:forEach var="field" items="${currentList.outline}" varStatus="counter">
+                        <input id="field${counter.count}" type="text" contentEditable="false" style="display:none;width:100px;text-align:left;" value="${field}"/><br>
+                    </c:forEach>
+<!--                </ol>-->
+            </div>
         <div> <!-- Update Item Names Form; JS script -->
             <form id="updateform" type="hidden" method="post" action="/SimpleSpringMVC/updateItemNames/${currentList.listid}"></form>
             <script src="${contextPath}/resources/js/events.js"></script>

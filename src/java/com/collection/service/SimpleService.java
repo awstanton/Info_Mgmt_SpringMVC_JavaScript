@@ -74,11 +74,11 @@ public class SimpleService {
     }
     
     public String[] getOutline(int listId) {
-        return simpleDAO.getOutline(listId).split(";");
+        return simpleDAO.getOutline(listId).split(":");
     }
     
     public String[] getItemInfo(int itemId) {
-        return simpleDAO.getItemInfo(itemId).split(";");
+        return simpleDAO.getItemInfo(itemId).split(":");
     }
 
 }

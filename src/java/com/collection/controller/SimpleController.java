@@ -94,7 +94,6 @@ public class SimpleController {
         
         SimpleList currentList = util.getLists().get(id);  // to be replaced
         List<SimpleItem> listOfItems = new ArrayList<>();
-//        System.out.println("id = " + id);
 
         for (SimpleItem item : util.getItems().values()) { // to be replaced
 //            System.out.println("item listid = " + item.getListid() + ", item name = " + item.getName());
@@ -103,6 +102,8 @@ public class SimpleController {
             }
         }
 
+        System.out.println("currentList.outline = " + currentList.getOutline());
+        
         ModelAndView mv = new ModelAndView();
         
         mv.setViewName("simplelist");
@@ -163,6 +164,7 @@ public class SimpleController {
 //        SimpleItem currentItem = simpleService.getItemById(itemId);
         SimpleItem currentItem = util.getItems().get(itemId); // to be replaced
         
+        
         // GET LIST OUTLINE USING THE LISTID
         // GET ITEM ATTRIBUTES
         // COMBINE THE OUTLINE AND ATTRIBUTES AND ADD TO MODEL
@@ -220,15 +222,15 @@ public class SimpleController {
         return "redirect:/showlist/" + listId;
     }
     /*
-    @RequestMapping(path = "/updateOutline", method = RequestMethod.POST)
-    public String updateOutline() {
+    @RequestMapping(path = "/updateOutline/{listId}", method = RequestMethod.POST)
+    public String updateOutline(@PathVariable("listId") int listId) {
         simpleService.updateOutline(listid, outline);
         util.getLists().get(listid).setOutline(outline);
         
     }
     
-    @RequestMapping(path = "/updateItemInfo", method = RequestMethod.POST)
-    public String updateItemInfo() {
+    @RequestMapping(path = "/updateItemInfo/{itemId}", method = RequestMethod.POST)
+    public String updateItemInfo(@PathVariable("itemId") int itemId) {
         simpleService.updateItemInfo(itemid, info);
         util.getItems().get(itemid).setInfo(info);
         

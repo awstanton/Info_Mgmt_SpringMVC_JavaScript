@@ -73,6 +73,21 @@ function changeEditability(e) {
             addbox.type = "hidden";
             addbox.value = "";
         }
+        
+        let fields = document.querySelectorAll('input[id^="field"]');
+        console.log(fields);
+        for (let i = 0; i < fields.length; i++) {
+            if (fields[i].style.display === "none") {
+                console.log("hello1");
+                fields[i].style.display = "block";
+                fields[i].contentEditable = "true";
+            }
+            else {
+                console.log("hello2");
+                fields[i].style.display = "none";
+                fields[i].contentEditable = "false";
+            }
+        }
     }
 };
 
@@ -81,6 +96,10 @@ function createOutline() {
     
     
 };
+
+function showItem() {
+    
+}
 
 //var deleteButtons = document.querySelectorAll('input[id^="delbtn"]');
 //

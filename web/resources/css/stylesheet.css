@@ -42,3 +42,27 @@ a {
     display: none;
 }
 
+
+.editMode {
+	margin: 0px auto;
+	width: 80%;
+}
+
+.editColumn {
+	float: left;
+	margin: 0;
+	width: 33%;
+}
+
+input[id^="editField"] {
+	width: 100px;
+	text-align: left;
+	color: purple;
+}
+
+input[id^="editName"] {
+	width: 100px;
+	text-align: left;
+	color: green;
+}
+

@@ -14,45 +14,37 @@
     </head>
     
     <body>
-        <div id="VIEWMODE"> <!-- List of Items -->
-            <h3>${currentList.name}</h3>
+        <div class="mainItemList">
+            <!--<h1>${currentList.name}</h1>-->
+            <h1>Items</h1>
+            
+            
             <c:forEach var="item" items="${listOfItems}">
                 <li>
-                    <!-- Interactive List Name -->
                     <a id="${item.itemid}" contentEditable="false" href="${contextPath}/showitem/${item.itemid}">${item}</a>
-                    <!-- Delete List -->
-                    <form class="inlineblock" type="hidden" method="post" action="${contextPath}/delitem/${currentList.listid}/${item.itemid}">
-                        <input id="delbtn${item.itemid}" class="red" type="hidden" value="-"/>
-                    </form>
+                    <input id="delbtn${item.itemid}" value="X" type="submit" class="delbtn"/>
                 </li>
             </c:forEach>
+            
+                <div><input id="addItem" placeholder="Add New Item"/></div><br>
         </div>
-		<div id="EDITMODE" class="editMode" >
-			<div class="editColumn">
-				<span>Edit Attribute Set</span><br>
-				<c:forEach var="field" items="${currentList.outline}" varStatus="counter">
-					<input id="editField${counter.count}" type="text" contentEditable="true" value="${field}"/><br>
-				</c:forEach>
-				<span>Add New Field</span><br><input id="addField"/>
-			</div>
-			<div class="editColumn">
-				<span>Edit Item Names</span><br>
-				<c:forEach var="item" items="${listOfItems}" varStatus="counter">
-					<input id="editName${item.itemid}" type="text" contentEditable="true" value="${item}"/>
-                                        <input id="deleteName${item.itemid}" type="submit" class="red" value="-"/><br>
-				</c:forEach><br>
-				<span>Add New Item</span><br><input id="addItem"/>
-			</div>
-<!--			<div class="editColumn">                                                        -->
-<!--				<span>Delete Items</span>                                                   -->
-<!--				<br><c:forEach var="item" items="${listOfItems}" varStatus="counter">       -->
-<!--				<span style="color:red">${item}-</span>                                     -->
-<!--				</c:forEach>                                                                -->
-<!--			</div>                                                                          -->
-			<div class="editColumn">
-			<span>Editing ${currentList.name}</span>
-			</div>
-		</div>
+            
+        <div class="sidebar">
+            <h4>Fields</h4>
+            
+            <c:forEach var="field" items="${currentList.outline}" varStatus="counter">
+                <div>
+                    <input id="editField${counter.count}" value="${field}" type="text" maxlength="30" contentEditable="true" class="fld"/>
+                    <input id="delfld${item.itemid}" value="X" type="submit" class="delfld"/><br>
+                </div>
+            </c:forEach>
+            
+            <input id="addField" placeholder="Add New Field" maxlength="30"/><br>
+        </div>
+            
+        <div id="editMode">
+            <h4>Editing <b>${currentList.name}</b></h4>
+        </div>
     </body>
 </html>
 

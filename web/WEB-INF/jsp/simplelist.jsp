@@ -14,37 +14,44 @@
     </head>
     
     <body>
-        <div class="mainItemList">
-            <!--<h1>${currentList.name}</h1>-->
-            <h1>Items</h1>
-            
+        <div id="section1" class="viewItemList">
+            <h4><b>${currentList.name}</b></h4>
+            <c:forEach var="item" items="${listOfItems}">
+                <li>
+                    <a id="${item.itemid}" value="${item}" contentEditable="false" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item">${item}</a>
+                </li>
+            </c:forEach>
+        </div>
+        <div id="section2" class="editItemList displayNone">
+            <h4 class="heading">Items</h4>
             
             <c:forEach var="item" items="${listOfItems}">
                 <li>
-                    <a id="${item.itemid}" contentEditable="false" href="${contextPath}/showitem/${item.itemid}">${item}</a>
-                    <input id="delbtn${item.itemid}" value="X" type="submit" class="delbtn"/>
+                    <input id="${item.itemid}" value="${item}" type="text" contentEditable="true" maxlength="30" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item"/>
+                    <input id="delbtn${item.itemid}" value="X" type="button" class="delbtn"/>
                 </li>
             </c:forEach>
             
-                <div><input id="addItem" placeholder="Add New Item"/></div><br>
+            <div><input id="addItem" placeholder="Add New Item" maxlength="30" type="text"/></div>
         </div>
-            
-        <div class="sidebar">
-            <h4>Fields</h4>
+        
+        <div id="section3" class="sidebar displayNone">
+            <h4 class="heading">Fields</h4>
             
             <c:forEach var="field" items="${currentList.outline}" varStatus="counter">
                 <div>
-                    <input id="editField${counter.count}" value="${field}" type="text" maxlength="30" contentEditable="true" class="fld"/>
-                    <input id="delfld${item.itemid}" value="X" type="submit" class="delfld"/><br>
+                    <input id="editField${counter.count}" value="${field}" type="text" maxlength="30" contentEditable="true" spellcheck="false" class="fld"/>
+                    <input id="delfld${item.itemid}" value="X" type="button" class="delfld"/><br>
                 </div>
             </c:forEach>
             
-            <input id="addField" placeholder="Add New Field" maxlength="30"/><br>
+            <input id="addField" placeholder="Add New Field" maxlength="30" type="text"/>
         </div>
             
-        <div id="editMode">
-            <h4>Editing <b>${currentList.name}</b></h4>
+        <div id="section4" class="displayNone">
+            <h4 id="editHeader" class="heading">Editing <b>${currentList.name}</b></h4>
         </div>
     </body>
+    <script src="${contextPath}/resources/js/simplelist.js"></script>
 </html>
 

@@ -5,141 +5,125 @@
     letter-spacing: 2px;
 }
 
-.mainItemList {
-    position: absolute;
-    left: 45%;
-    /*margin-left: 10px;*/
+.viewItemList * {
+    text-align: center;
+    font-size: larger;
+    line-height: 200%;
+    word-wrap: break-word;
 }
 
-.mainItemList * {
-   text-align: left;
-   font-size: larger;
-   line-height: 200%;
-/*   font-family: sans-serif;*/
-}
-
-/* Remove Default List Item Formatting */
-li {
-   list-style: none;
-}
-
-/* Remove Default Link Formatting */
-li a {
-    color: inherit;
+a {
     text-decoration: inherit;
+    color: inherit;
+}
+
+.editItemList {
+    position: absolute;
+    top: 0;
+    left: 36%;
+    width: 54%;
+    max-width: 54%;
+    box-sizing: border-box;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.editItemList * {
+    text-align: left;
+    font-size: larger;
+    line-height: 200%;
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.heading {
+    line-height: 100%;
+    top: 0;
+    font-size: 100%;
+    letter-spacing: 0px;
+    height: 18px;
+}
+
+.item, .editItemList div {
+    width: calc(100% - 22px - 14px);
+}
+
+li {
+    list-style: none;
 }
 
 .delbtn  {
     display: inline;
     font-weight: bolder;
     color: red;
-/*    left:0;
-    top:50%;*/
-    width:24px;
-    height:26px;
     vertical-align: middle;
     text-align: center;
     font-size: small;
+    right: 0;
+    width:22px;
+    height:26.0334px;
     padding: 0px;
-/*    margin: 1px 1px 1px 1px;*/
+    margin: 0px;
     /*text-overflow: "-";*/
-/*    font-size-adjust: .1;*/
+    /*font-size-adjust: .1;*/
 }
 
 .delfld {
     display: inline;
     font-weight: bolder;
     color: red;
-    width:22px;
-    height:22px;
     vertical-align: middle;
     text-align: center;
     font-size: small;
-    padding: 0px;
     position: absolute;
     right: 0;
-/*    margin: 1px 1px 1px 1px;*/
-    /*text-overflow: "-";*/
-/*    font-size-adjust: .1;*/
+    width:22px;
+    height:22px;
+    padding: 0px;
 }
 
 .sidebar {
     position: absolute;
-    left: 0;
     top: 0;
-    padding-left: 5px;
+    left: 0;
     width: 480px;
-    max-width: 40%;
+    max-width: 36%;
     display: flex;
+    padding-left: 5px;
     flex-direction: column;
 }
 
-.fld, #addField {
-    width: calc(100% - 22px - 5px);
+#addItem {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 #addField {
     margin-top: 10px;
+    margin-bottom: 20px;
 }
 
-#editMode {
+.fld, #addField {
+    width: calc(100% - 24px - 5px);
+}
+
+#editHeader {
     position: absolute;
-    right: 0;
     top: 0;
-    padding-left: 5px;
-    padding-right: 5px;
+    left: 90%;
+    right: 0%;
+/*    max-height: 10px;*/
+    padding-left: 0px;
+    padding-right: 0px;
+    word-wrap: break-word;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/** {
-    background-color: azure;
-}
-
-#mainItemList {
-    text-align: center;
-    letter-spacing: 2px;
-    
-}
-
-li {
-   list-style: none;
-   text-align: center;
-   font-size: larger;
-   line-height: 200%;
-   font-family: sans-serif;
-   letter-spacing: 2px;
-}
-
-li a { }
-
-li input {
-    display: inline-block;
-    font-weight: bolder;
-    color: red;
-}
-
-#fieldsSidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding-right: 5px;
-}
-
-.none {
+.displayNone {
     display: none;
-}*/
+}
 
+/* Remove Default Link Formatting */
+/*li .link {
+    color: inherit;
+    text-decoration: inherit;
+}*/

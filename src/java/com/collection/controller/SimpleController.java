@@ -110,6 +110,7 @@ public class SimpleController {
         mv.addObject("currentList", currentList);
         mv.addObject("listOfItems", listOfItems);
         mv.addObject("newItem", newItem);
+        mv.addObject("nextItemId", util.getNextItemId());
         return mv;
     }
     

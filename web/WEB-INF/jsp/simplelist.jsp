@@ -14,44 +14,51 @@
     </head>
     
     <body>
-        <div id="section1" class="viewItemList">
+        <div id="viewListSection" class="viewItemList">
             <h4><b>${currentList.name}</b></h4>
             <c:forEach var="item" items="${listOfItems}">
                 <li>
-                    <a id="${item.itemid}" value="${item}" contentEditable="false" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item">${item}</a>
+                    <a id="view${item.itemid}" value="${item}" contentEditable="false" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item">${item}</a>
                 </li>
             </c:forEach>
         </div>
-        <div id="section2" class="editItemList displayNone">
+        <div id="editListSection" class="editItemList displayNone">
             <h4 class="heading">Items</h4>
             
             <c:forEach var="item" items="${listOfItems}">
                 <li>
-                    <input id="${item.itemid}" value="${item}" type="text" contentEditable="true" maxlength="30" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item"/>
-                    <input id="delbtn${item.itemid}" value="X" type="button" class="delbtn"/>
+                    <input id="${item.itemid}" value="${item}" type="text" contentEditable="true" maxlength="30" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item"/><!--
+                 --><input id="delitm${item.itemid}" value="X" type="button" class="itmbtn red"/>
                 </li>
             </c:forEach>
             
-            <div><input id="addItem" placeholder="Add New Item" maxlength="30" type="text"/></div>
+            <div id="addItemSection">
+                <input id="addItem" placeholder="Add New Item" maxlength="30" type="text" class="item"/><!--
+             --><input id="addItmBtn" value="O" type="button" class="itmbtn green"/>
+            </div>
         </div>
         
-        <div id="section3" class="sidebar displayNone">
+        <div id="sidebarSection" class="sidebar displayNone">
             <h4 class="heading">Fields</h4>
             
             <c:forEach var="field" items="${currentList.outline}" varStatus="counter">
                 <div>
-                    <input id="editField${counter.count}" value="${field}" type="text" maxlength="30" contentEditable="true" spellcheck="false" class="fld"/>
-                    <input id="delfld${item.itemid}" value="X" type="button" class="delfld"/><br>
+                    <input id="editField${counter.count}" value="${field}" type="text" maxlength="30" contentEditable="true" spellcheck="false" class="fld"/><!--
+                 --><input id="delfld${counter.count}" value="X" type="button" class="fldbtn red"/>
                 </div>
             </c:forEach>
+            <div id="addFieldSection">
+                <input id="addField" placeholder="Add New Field" maxlength="30" type="text"/><!--
+             --><input id="addFldBtn" value="O" type="button" class="fldbtn green"/><br>
+            </div>
             
-            <input id="addField" placeholder="Add New Field" maxlength="30" type="text"/>
         </div>
             
-        <div id="section4" class="displayNone">
+        <div id="submitSection" class="displayNone">
             <h4 id="editHeader" class="heading">Editing <b>${currentList.name}</b></h4>
         </div>
     </body>
+    <script>var nextItemId = <c:out value="${nextItemId}"/></script>
     <script src="${contextPath}/resources/js/simplelist.js"></script>
 </html>
 

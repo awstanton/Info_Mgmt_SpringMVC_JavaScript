@@ -44,7 +44,7 @@ a {
     height: 18px;
 }
 
-.item, .editItemList div {
+.item {
     width: calc(100% - 22px - 14px);
 }
 
@@ -52,10 +52,9 @@ li {
     list-style: none;
 }
 
-.delbtn  {
+.itmbtn  {
     display: inline;
     font-weight: bolder;
-    color: red;
     vertical-align: middle;
     text-align: center;
     font-size: small;
@@ -68,10 +67,9 @@ li {
     /*font-size-adjust: .1;*/
 }
 
-.delfld {
+.fldbtn {
     display: inline;
     font-weight: bolder;
-    color: red;
     vertical-align: middle;
     text-align: center;
     font-size: small;
@@ -93,12 +91,12 @@ li {
     flex-direction: column;
 }
 
-#addItem {
+#addItem, #addItmBtn {
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-#addField {
+#addField, #addFldBtn {
     margin-top: 10px;
     margin-bottom: 20px;
 }
@@ -120,6 +118,19 @@ li {
 
 .displayNone {
     display: none;
+}
+
+.linethrough {
+    text-decoration: line-through;
+    color: gray;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
 }
 
 /* Remove Default Link Formatting */

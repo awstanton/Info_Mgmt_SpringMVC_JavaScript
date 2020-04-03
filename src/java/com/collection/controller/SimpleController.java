@@ -128,6 +128,16 @@ public class SimpleController {
         return "redirect:/";
     }
     
+    public String updateList(@RequestBody String body) {
+        int listId = 0;
+        // parse body
+        // update database
+        // update util
+        return "redirect:/showlist/" + listId;
+    }
+    
+    
+    
     @RequestMapping(path = "/updateListNames", method = RequestMethod.POST)
     public String updateListNames(@RequestBody String str) {
         //String regex = "([\\w]*)=";

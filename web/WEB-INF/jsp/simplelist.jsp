@@ -22,7 +22,7 @@
                 </li>
             </c:forEach>
         </div>
-        <div id="editListSection" class="editItemList displayNone">
+        <div id="editListSection" class="editItemList flex displayNone">
             <h4 class="heading">Items</h4>
             
             <c:forEach var="item" items="${listOfItems}">
@@ -38,7 +38,7 @@
             </div>
         </div>
         
-        <div id="sidebarSection" class="sidebar displayNone">
+        <div id="sidebarSection" class="sidebar flex displayNone">
             <h4 class="heading">Fields</h4>
             
             <c:forEach var="field" items="${currentList.outline}" varStatus="counter">
@@ -56,6 +56,10 @@
             
         <div id="submitSection" class="displayNone">
             <h4 id="editHeader" class="heading">Editing <b>${currentList.name}</b></h4>
+            <label>Check for Duplicates<input id="checkForDuplicates" type="checkbox"/></label><br><br>
+            <input id="submitbutton" type="button" value="Submit"/>
+            <p id="dupMsg" class="displayNone">Duplicates found (highlighted). If you want to continue, click Submit again. Otherwise, remove duplicates and then click Submit. </p>
+            <form id="submitform" method="post" action="/SimpleSpringMVC/updateListNames" class="displayNone"></form>
         </div>
     </body>
     <script>var nextItemId = <c:out value="${nextItemId}"/></script>

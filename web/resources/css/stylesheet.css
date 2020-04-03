@@ -55,12 +55,14 @@ li {
 .itmbtn  {
     display: inline;
     font-weight: bolder;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
+    vertical-align: bottom;
     text-align: center;
     font-size: small;
     right: 0;
     width:22px;
-    height:26.0334px;
+    /*height:26.0334px;*/
+    height: 100%;
     padding: 0px;
     margin: 0px;
     /*text-overflow: "-";*/
@@ -70,7 +72,8 @@ li {
 .fldbtn {
     display: inline;
     font-weight: bolder;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
+    vertical-align: bottom;
     text-align: center;
     font-size: small;
     position: absolute;
@@ -86,34 +89,47 @@ li {
     left: 0;
     width: 480px;
     max-width: 36%;
-    display: flex;
     padding-left: 5px;
-    flex-direction: column;
 }
 
-#addItem, #addItmBtn {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-#addField, #addFldBtn {
+/*#addItem, #addItmBtn */
+#addItemSection {
     margin-top: 10px;
     margin-bottom: 20px;
 }
 
-.fld, #addField {
-    width: calc(100% - 24px - 5px);
+/*#addField, #addFldBtn*/
+#addFieldSection {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    top: 0;
 }
 
-#editHeader {
+.fld, #addField {
+    width: calc(100% - 24px - 5px + 1px);
+}
+
+#submitSection {
     position: absolute;
-    top: 0;
+    top: 0%;
+    bottom: 0%;
     left: 90%;
     right: 0%;
 /*    max-height: 10px;*/
     padding-left: 0px;
     padding-right: 0px;
+}
+
+#editHeader {
+    display: block;
     word-wrap: break-word;
+    overflow: auto;
+    height: auto;
+}
+
+.flex {
+    display: flex;
+    flex-direction: column;
 }
 
 .displayNone {
@@ -131,6 +147,11 @@ li {
 
 .green {
     color: green;
+}
+
+.duplicate {
+    /*border: 1px solid blue;*/
+    background: lightblue;
 }
 
 /* Remove Default Link Formatting */

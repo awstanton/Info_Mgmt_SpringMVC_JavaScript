@@ -1,88 +1,139 @@
 
-/* Notes:
-    NEED TO MAKE SURE THESE OPERATIONS WORK WHEN THERE ARE NO ITEMS IN THE LIST
-    MAYBE green background or border or outline for newly inserted items
-*/
 
 (function() {
-    
-    var editMode = false;
-    
-    var stack = new Array();
-    var currentIndex = -1;
-    
-//    var stackEnum = {
-//      "newfield": 1,
-//      "newitem": 2,
-//      "editfield": 3,
-//      "edititem": 4,
-//      "deletefield": 5,
-//      "deleteitem": 6,
-//      "crossfield": 7,
-//      "crossitem": 8,
-//      "uncrossfield": 9,
-//      "uncrossitem": 10
-//    };
-    
-    
+    var undoStack = new Array();
+    var redoStack = new Array();
     
     var viewListSection = document.getElementById("viewListSection");
     var editListSection = document.getElementById("editListSection");
     var sidebarSection = document.getElementById("sidebarSection");
     var submitSection = document.getElementById("submitSection");
+    var submitButton = document.getElementById("submitbutton");
     
     function toggleMode(event) {
-//        console.log(editMode + " in toggleMode");
         if(event.ctrlKey && event.altKey) {
             if (event.key === "e") {
                 viewListSection.classList.toggle("displayNone");
                 editListSection.classList.toggle("displayNone");
                 sidebarSection.classList.toggle("displayNone");
                 submitSection.classList.toggle("displayNone");
+            }
+            else if (event.key === "u") {
+                if (undoStack.length > 0) {
+                    var undoStackElement = undoStack[undoStack.length - 1];
                 
-                (editMode) ? editMode = false : editMode = true;
+                    switch(undoStackElement[0]) {
+                        case "additem":
+                            var itemAdded = undoStackElement[1];
+                            var parent = itemAdded.parentElement;
+                            parent.removeChild(itemAdded);
+                            redoStack.push(undoStack.pop());
+                            
+                            break;
+                        case "addfield":
+                            var fieldAdded = undoStackElement[1];
+                            var parent = fieldAdded.parentElement;
+                            parent.removeChild(fieldAdded);
+                            redoStack.push(undoStack.pop());
+
+                            break;
+                        case "edititem":
+                            var newItemName = undoStackElement[1][1].value;
+                            undoStackElement[1][1].value = undoStackElement[1][0];  // revert name to old name
+                            undoStackElement[1][0] = newItemName; // revert name for use in redo operation
+                            redoStack.push(undoStack.pop());
+
+                            break;
+                        case "editfield":
+                            var newFieldName = undoStackElement[1][1].value;
+                            undoStackElement[1][1].value = undoStackElement[1][0];  // revert name to old name
+                            undoStackElement[1][0] = newFieldName; // revert name for use in redo operation
+                            redoStack.push(undoStack.pop());
+
+                            break;
+                        case "removeitem":
+                            undoStackElement[1].insertAdjacentElement('afterend', undoStackElement[2]);
+                            redoStack.push(undoStack.pop());
+
+                            break;
+                        case "removefield":
+                            undoStackElement[1].insertAdjacentElement('afterend', undoStackElement[2]);
+                            redoStack.push(undoStack.pop());
+                            
+                            break;
+
+                        default:
+                            alert("something bad happened to the UNDO code");
+                            break;
+                    }
+                }
+            }
+            else if (event.key === "r" ) {
+                if (redoStack.length > 0) {
+                    var redoStackElement = redoStack[redoStack.length - 1];
+                
+                    switch(redoStackElement[0]) {
+                        case "additem":
+                            var itemUnAdded = redoStackElement[1];
+                            addItemSection.insertAdjacentElement('beforebegin', itemUnAdded);
+                            undoStack.push(redoStack.pop());
+                            
+                            break;
+                        case "addfield":
+                            var fieldUnAdded = redoStackElement[1];
+                            addFieldSection.insertAdjacentElement('beforebegin', fieldUnAdded);
+                            undoStack.push(redoStack.pop());
+
+                            break;
+                        case "edititem":
+                            var oldItemName = redoStackElement[1][1].value;
+                            redoStackElement[1][1].value = redoStackElement[1][0];
+                            redoStackElement[1][0] = oldItemName;
+                            undoStack.push(redoStack.pop());
+
+                            break;
+                        case "editfield":
+                            var oldFieldName = redoStackElement[1][1].value;
+                            redoStackElement[1][1].value = redoStackElement[1][0];
+                            redoStackElement[1][0] = oldFieldName;
+                            undoStack.push(redoStack.pop());
+
+                            break;
+                        case "removeitem":
+                            redoStackElement[1].parentElement.removeChild(redoStackElement[2]);
+                            undoStack.push(redoStack.pop());
+
+                            break;
+                        case "removefield":
+                            redoStackElement[1].parentElement.removeChild(redoStackElement[2]);
+                            undoStack.push(redoStack.pop());
+                            
+                            break;
+
+                        default:
+                            alert("something bad happened to the REDO code");
+                            break;
+                    }
+                }
             }
         }
     }
 
-    function addOrRemove(event) {
+    function remove(event) {
         var id = event.target.id;
-        var element = document.getElementById(id); // just use event.target instead?
         
         if (id.startsWith("delitm") || id.startsWith("delfld")) {
             if (event.ctrlKey && event.altKey) {
-                if (element.value === "O") {
-                    var parent = element.parentElement;
-                    var grandParent = parent.parentElement;
-                    
-                    if (id.startsWith("delitm")) {
-                        stack.push(["deleteitem", grandParent.removeChild(parent)]); ////
-                        ++currentIndex; //
-                    }
-                    else {
-                        stack.push(["deletefield", grandParent.removeChild(parent)]); ////
-                        ++currentIndex; //
-                    }
-//                    console.log(currentIndex);
-//                    console.log(stack);
-//                    console.log(stack[currentIndex][1].toString());
-                }
-            }
-            else {
-                (element.value === "X") ? element.value = "O" : element.value = "X";
-                element.previousElementSibling.classList.toggle("linethrough");
-                element.classList.toggle("green");
-                if (element.previousElementSibling.readOnly) {
-                    element.previousElementSibling.removeAttribute("readOnly");
-                    
-                    stack.push(["uncross", element.previousElementSibling]); //
-                    ++currentIndex; //
+                var element = event.target.parentElement;
+                var parent = element.parentElement;
+
+                if (id.startsWith("delitm")) {
+                    undoStack.push(["removeitem", element.previousElementSibling, parent.removeChild(element)]);
+                    if (redoStack.length !== 0) { redoStack.length = 0; }
                 }
                 else {
-                    element.previousElementSibling.setAttribute("readOnly", "");
-                    
-                    stack.push(["cross", element.previousElementSibling]); //
-                    ++currentIndex; //
+                    undoStack.push(["removefield", element.previousElementSibling, parent.removeChild(element)]);
+                    if (redoStack.length !== 0) { redoStack.length = 0; }
                 }
             }
         }
@@ -92,8 +143,7 @@
     var addItemSection = document.getElementById("addItemSection");
 
     function addItem(event) {
-        console.log(editMode + " in addItem");
-        if (addItemElement.value.trim()) { // add check for duplicates
+        if (addItemElement.value.trim()) {
             var newListItem = document.createElement("li");
             var newInput = document.createElement("input");
             var newButton = document.createElement("input");
@@ -116,23 +166,20 @@
             newButton.setAttribute("class", "itmbtn red");
 
             addItemSection.insertAdjacentElement('beforebegin', newListItem);
-
-            addItemElement.value = "";
             
-            stack.push(["additem", newListItem]); //
-            ++currentIndex; //
+            undoStack.push(["additem", newListItem]);
+            if (redoStack.length !== 0) { redoStack.length = 0; }
+            
         }
+        addItemElement.value = "";
     }
 
     var addFieldElement = document.getElementById("addField");
     var addFieldSection = document.getElementById("addFieldSection");
-    var nextFieldId = 11;
+    var nextFieldId = 11; // limit on number of fields allowed for a single list
 
     function addField(event) {
-        console.log(editMode + " in addField");
-        var fieldNum = document.getElementById("sidebarSection").children.length - 1;
-
-        if (addFieldElement.value.trim() && fieldNum < 11) { // add check for duplicates
+        if (addFieldElement.value.trim() && (sidebarSection.children.length - 1) < 11) {
             var newDiv = document.createElement("div");
             var newInput = document.createElement("input");
             var newButton = document.createElement("input");
@@ -154,168 +201,166 @@
             newButton.setAttribute("class", "fldbtn red");
 
             addFieldSection.insertAdjacentElement('beforebegin', newDiv);
-
-            addFieldElement.value = "";
             
-            stack.push(["addfield", newDiv]); //
-            ++currentIndex; //
+            undoStack.push(["addfield", newDiv]);
+            if (redoStack.length !== 0) { redoStack.length = 0; }
+            
         }
+        addFieldElement.value = "";
     }
 
     var oldItemName = undefined;
     var oldFieldName = undefined;
 
-    // IS FOCUS OCCURRING WHEN I PRESS THE BUTTON BECAUSE IT IS MODIFYING PROPERTIES OF THE ELEMENT IN QUESTION?
-
     function focusName(event) {
-//        console.log("focusName");
-        if (!event.target.readOnly) {
-            if (!isNaN(parseInt(event.target.id)) && isFinite(event.target.id)) {
-                console.log("focus on edit item");
-                oldItemName = event.target.value;
-                oldFieldName = undefined;
-            }
-            else if (event.target.id.startsWith("editField")) {
-                console.log("focus on edit field");
-                oldFieldName = event.target.value;
-                oldItemName = undefined;
-            }
+        if (!isNaN(parseInt(event.target.id)) && isFinite(event.target.id)) {
+            oldItemName = event.target.value;
+            oldFieldName = undefined;
+        }
+        else if (event.target.id.startsWith("editField")) {
+            oldFieldName = event.target.value;
+            oldItemName = undefined;
         }
     }
     
+    // possible issue: one time, it seemed like the field for adding a new field was caught up in the undo and redo of editing the name there
+    
     function blurName(event) {
-//        console.log("blurName");
-//        console.log("oldItemName = " + oldItemName);
-//        console.log("oldFieldName = " + oldFieldName);
+        var newName = event.target.value;
         
-        if (!event.target.readOnly) {
-            if (oldItemName && event.target.value !== oldItemName) {
-                if (event.target.value.trim() === oldItemName || event.target.value.trim() === "") {
-                    event.target.value = oldItemName;
-                }
-                else {
-                    stack.push(["edititem", [oldItemName, event.target]]);
-                    ++currentIndex;
-                    event.target.value = event.target.value.trim();
-
-                    console.log(stack);
-                }
+        if (oldItemName && newName !== oldItemName) {
+            if (newName.trim() === oldItemName || newName.trim() === "") {
+                event.target.value = oldItemName;
             }
-            else if (oldFieldName && event.target.value !== oldFieldName) {
-                if (event.target.value.trim() === oldFieldName || event.target.value.trim() === "") {
-                    event.target.value = oldFieldName;
-                }
-                else {
-                    stack.push(["editfield", [oldFieldName, event.target]]);
-                    ++currentIndex;
-                    event.target.value = event.target.value.trim();
-
-                    console.log(stack);
-                }
+            else {
+                undoStack.push(["edititem", [oldItemName, event.target]]);
+                if (redoStack.length !== 0) { redoStack.length = 0; }
+                event.target.value = newName.trim();
+            }
+        }
+        else if (oldFieldName && newName !== oldFieldName) {
+            if (newName.trim() === oldFieldName || newName.trim() === "") {
+                event.target.value = oldFieldName;
+            }
+            else {
+                undoStack.push(["editfield", [oldFieldName, event.target]]);
+                if (redoStack.length !== 0) { redoStack.length = 0; }
+                event.target.value = newName.trim();
             }
         }
         oldItemName = undefined;
         oldFieldName = undefined;
     }
     
-    function undo() {
-        // if the stack is not empty and currentIndex is not less than 0
-        // read element on top of the stack
-        // based on action, carry out appropriate action using the provided object reference
-        // decrement the index
-    }
+    var duplicatePrompt = false;
+    
+    function submitForm(event) {
+        if (undoStack.length === 0 && redoStack.length === 0) {
+            addItemElement.value = "";
+            addFieldElement.value = "";
+            
+            viewListSection.classList.toggle("displayNone");
+            editListSection.classList.toggle("displayNone");
+            sidebarSection.classList.toggle("displayNone");
+            submitSection.classList.toggle("displayNone");
+        }
+        else if (!duplicatePrompt) {
+            var itemChildren = editListSection.children;
+            var fieldChildren = sidebarSection.children;
+            var duplicateFound = false;
 
-    function redo() {
-       // if stack is not empty and currentIndex is not equal to length - 1
-       // read element at currentIndex + 1
-       // based on action, carry out appropriate action using provided object reference
-       // increment the index
+            var itemNames = Object.create(null);
+            var fieldNames = Object.create(null);
+            var name;
+
+            for (var i = 1, len = itemChildren.length - 1; i < len; ++i) {
+                name = itemChildren[i].firstElementChild.value;
+
+                if (!(name in itemNames)) {
+                    itemNames[name] = { 0: 1 /* length of list */, 1: itemChildren[i].firstElementChild };
+                }
+                else {
+                    itemNames[name][itemNames[name][0] + 1] = itemChildren[i].firstElementChild; // append element to list for later reference
+                    itemNames[name][0] = itemNames[name][0] + 1; // increment length of list
+
+                    duplicateFound = true;
+                }
+            }
+
+            for (i = 1, len = fieldChildren.length - 1; i < len; ++i) {
+                name = fieldChildren[i].firstElementChild.value;
+
+                if (!(name in fieldNames)) {
+                    fieldNames[name] = { 0: 1 /* length of list */, 1: fieldChildren[i].firstElementChild };
+                }
+                else {
+                    fieldNames[name][fieldNames[name][0] + 1] = fieldChildren[i].firstElementChild; // append element to list
+                    fieldNames[name][0] = fieldNames[name][0] + 1; // increment length of list
+
+                    duplicateFound = true;
+                }
+            }
+
+            for (name in itemNames) {
+                len = itemNames[name][0];
+                if (len > 1) {
+                    for (i = 1; i <= len; ++i) {
+                        itemNames[name][i].classList.toggle("duplicate");
+                    }
+                }
+            }
+
+            for (name in fieldNames) {
+                len = fieldNames[name][0];
+                if (len > 1) {
+                    for (i = 1; i <= len; ++i) {
+                        fieldNames[name][i].classList.toggle("duplicate");
+                    }
+                }
+            }
+
+            if (duplicateFound) {
+                document.getElementById("dupMsg").classList.toggle("displayNone");
+                duplicatePrompt = true;
+            }
+        }
+        else {
+            document.getElementById("dupMsg").classList.toggle("displayNone");
+            duplicatePrompt = false;
+        }
+            
+            
+            // if duplicates are found
+                // highlight duplicates and inform user there are duplicates
+                // if the user does not make any changes to any names or does not delete anything and then just submits the form with duplicates
+                    // then allow
+                // else if the user makes any changes to any names or deletes something
+                    // then check for duplicates again
+            // else
+                // prepare the form and submit it
+                
+            // ALSO REMEMBER TO EMPTY THE STACKS AND RESET EVERYTHING ELSE THAT NEEDS TO
+        
+            
+        
+        
+        
     }
     
     document.addEventListener("keydown", toggleMode, false);
-    document.getElementById("editListSection").addEventListener("click", addOrRemove, false);
-    document.getElementById("sidebarSection").addEventListener("click", addOrRemove, false);
+    
     document.getElementById("addItmBtn").addEventListener("click", addItem, false);
     document.getElementById("addFldBtn").addEventListener("click", addField, false);
     
-    document.getElementById("editListSection").addEventListener("focusin", focusName, false);
-    document.getElementById("sidebarSection").addEventListener("focusin", focusName, false);
-    document.getElementById("editListSection").addEventListener("focusout", blurName, false);
-    document.getElementById("sidebarSection").addEventListener("focusout", blurName, false);
+    editListSection.addEventListener("focusin", focusName, false);
+    sidebarSection.addEventListener("focusin", focusName, false);
+    editListSection.addEventListener("focusout", blurName, false);
+    sidebarSection.addEventListener("focusout", blurName, false);
+    
+    editListSection.addEventListener("click", remove, false);
+    sidebarSection.addEventListener("click", remove, false);
+    
+    submitButton.addEventListener("click", submitForm, false);
     
 })();
 
-
-
-
-/*
-
-if (!isNaN(parseInt(event.target.id)) && isFinite(event.target.id))
-
-function addItem(event) {
-    var addItem = document.getElementById("addItem");
-    
-    if (addItem.value.trim()) {
-        var addItemSection = document.getElementById("addItemSection");
-        
-        var refListItem = addItemSection.previousElementSibling;
-        
-        var newListItem = refListItem.cloneNode(true);
-
-        newListItem.firstElementChild.setAttribute("id", "SAMPLE");
-        newListItem.firstElementChild.setAttribute("value", addItem.value.trim());
-        newListItem.firstElementChild.setAttribute("type", "text");
-        newListItem.firstElementChild.setAttribute("contentEditable", "true");
-        newListItem.firstElementChild.setAttribute("maxLength", refListItem.firstElementChild.maxLength);
-        newListItem.firstElementChild.setAttribute("spellCheck", "false");
-        newListItem.firstElementChild.setAttribute("class", refListItem.firstElementChild.className);
-
-        var newHref = refListItem.firstElementChild.href;
-        // manipulate newHref by replacing the item id
-        newListItem.setAttribute("href", newHref);
-
-        newListItem.lastElementChild.setAttribute("id", "delitmSAMPLE");
-        newListItem.lastElementChild.setAttribute("value", "X");
-        newListItem.lastElementChild.setAttribute("type", "button");
-        newListItem.lastElementChild.setAttribute("class", "itmbtn red");
-
-        addItemSection.insertAdjacentElement('beforebegin', newListItem);
-
-        addItem.value = "";
-    }
-}
-
-function addField(event) {
-    var addField = document.getElementById("addField");
-    
-    console.log("children length = " + document.getElementById("section3").children.length);
-    
-    if (addField.value.trim() && document.getElementById("section3").children.length < 12) {
-        var addFieldSection = document.getElementById("addFieldSection");
-        var refDiv = addFieldSection.previousElementSibling;
-        var newDiv = refDiv.cloneNode(true);
-
-        newDiv.firstElementChild.setAttribute("id", "SAMPLE");
-        newDiv.firstElementChild.setAttribute("value", addField.value.trim());
-        newDiv.firstElementChild.setAttribute("type", "text");
-        newDiv.firstElementChild.setAttribute("contentEditable", "true");
-        newDiv.firstElementChild.setAttribute("maxLength", refDiv.firstElementChild.maxLength);
-        newDiv.firstElementChild.setAttribute("spellCheck", "false");
-        newDiv.firstElementChild.setAttribute("class", refDiv.firstElementChild.className);
-
-        var newHref = refDiv.firstElementChild.href;
-        // manipulate newHref by replacing the item id
-        newDiv.setAttribute("href", newHref);
-
-        newDiv.lastElementChild.setAttribute("id", "delfldSAMPLE");
-        newDiv.lastElementChild.setAttribute("value", "X");
-        newDiv.lastElementChild.setAttribute("type", "button");
-        newDiv.lastElementChild.setAttribute("class", "fldbtn red");
-
-        addFieldSection.insertAdjacentElement('beforebegin', newDiv);
-
-        addField.value = "";
-    }
-}
-
- */

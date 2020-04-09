@@ -27,13 +27,13 @@
             
             <c:forEach var="item" items="${listOfItems}">
                 <li>
-                    <input id="${item.itemid}" value="${item}" type="text" contentEditable="true" maxlength="30" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item"/><!--
+                    <input id="${item.itemid}" value="${item}" type="text" contentEditable="true" maxlength="50" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item"/><!--
                  --><input id="delitm${item.itemid}" value="X" type="button" class="itmbtn red"/>
                 </li>
             </c:forEach>
             
             <div id="addItemSection">
-                <input id="addItem" placeholder="Add New Item" maxlength="30" type="text" class="item"/><!--
+                <input id="addItm" placeholder="Add New Item" maxlength="50" type="text" class="item"/><!--
              --><input id="addItmBtn" value="O" type="button" class="itmbtn green"/>
             </div>
         </div>
@@ -43,12 +43,12 @@
             
             <c:forEach var="field" items="${currentList.outline}" varStatus="counter">
                 <div>
-                    <input id="editField${counter.count}" value="${field}" type="text" maxlength="30" contentEditable="true" spellcheck="false" class="fld"/><!--
+                    <input id="field${counter.count}" value="${field}" type="text" maxlength="50" contentEditable="true" spellcheck="false" class="fld"/><!--
                  --><input id="delfld${counter.count}" value="X" type="button" class="fldbtn red"/>
                 </div>
             </c:forEach>
             <div id="addFieldSection">
-                <input id="addField" placeholder="Add New Field" maxlength="30" type="text"/><!--
+                <input id="addFld" placeholder="Add New Field" maxlength="50" type="text"/><!--
              --><input id="addFldBtn" value="O" type="button" class="fldbtn green"/><br>
             </div>
             
@@ -56,10 +56,10 @@
             
         <div id="submitSection" class="displayNone">
             <h4 id="editHeader" class="heading">Editing <b>${currentList.name}</b></h4>
-            <label>Check for Duplicates<input id="checkForDuplicates" type="checkbox"/></label><br><br>
+            <!--<label>Remove Duplicates<input id="duplicatesCheckbox" type="checkbox"/></label><br><br>-->
             <input id="submitbutton" type="button" value="Submit"/>
-            <p id="dupMsg" class="displayNone">Duplicates found (highlighted). If you want to continue, click Submit again. Otherwise, remove duplicates and then click Submit. </p>
-            <form id="submitform" method="post" action="/SimpleSpringMVC/updateListNames" class="displayNone"></form>
+            <!--<p id="dupMsg" class="displayNone">Duplicates found (highlighted). If you want to continue, click Submit again. Otherwise, remove duplicates and then click Submit. </p>-->
+            <form id="submitform" method="post" action="/SimpleSpringMVC/updateList/${currentList.listid}" class="displayNone"></form>
         </div>
     </body>
     <script>var nextItemId = <c:out value="${nextItemId}"/></script>

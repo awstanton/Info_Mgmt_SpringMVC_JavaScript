@@ -92,20 +92,20 @@ li {
     padding-left: 5px;
 }
 
-/*#addItem, #addItmBtn */
+/*#addItm, #addItmBtn */
 #addItemSection {
     margin-top: 10px;
     margin-bottom: 20px;
 }
 
-/*#addField, #addFldBtn*/
+/*#addFld, #addFldBtn*/
 #addFieldSection {
     margin-top: 10px;
     margin-bottom: 20px;
     top: 0;
 }
 
-.fld, #addField {
+.fld, #addFld {
     width: calc(100% - 24px - 5px + 1px);
 }
 

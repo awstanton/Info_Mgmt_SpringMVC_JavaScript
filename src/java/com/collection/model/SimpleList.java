@@ -29,19 +29,20 @@ public class SimpleList {
     public ArrayList<String> getOutline() {
         return outline;
     }
+    
     public void setListid(int listid) {
         this.listid = listid;
     }
     public void setName(String name) {
         this.name = name;
     }
+    public void setOutline(ArrayList<String> outline) {
+        this.outline = outline;
+    }
     public void addOutlineField(String field) {
         outline.add(field);
     }
     
-    public void setOutline(ArrayList<String> outline) {
-        this.outline = outline;
-    }
     
     @Override
     public String toString() {

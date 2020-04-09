@@ -1,6 +1,9 @@
-
+// MAKE SURE I DO NOT ASSUME ANYWHERE THAT THERE ARE NO DUPLICATES
 
 (function() {
+    
+    var origNextItemId = nextItemId; // used to determine whether elements were existing or not
+    
     var undoStack = new Array();
     var redoStack = new Array();
     
@@ -139,7 +142,7 @@
         }
     }
 
-    var addItemElement = document.getElementById("addItem");
+    var addItemElement = document.getElementById("addItm");
     var addItemSection = document.getElementById("addItemSection");
 
     function addItem(event) {
@@ -174,7 +177,7 @@
         addItemElement.value = "";
     }
 
-    var addFieldElement = document.getElementById("addField");
+    var addFieldElement = document.getElementById("addFld");
     var addFieldSection = document.getElementById("addFieldSection");
     var nextFieldId = 11; // limit on number of fields allowed for a single list
 
@@ -187,7 +190,7 @@
             newDiv.appendChild(newInput);
             newDiv.appendChild(newButton);
 
-            newInput.setAttribute("id", "editField" + nextFieldId);
+            newInput.setAttribute("id", "field" + nextFieldId);
             newInput.setAttribute("value", addFieldElement.value.trim());
             newInput.setAttribute("type", "text");
             newInput.setAttribute("contentEditable", "true");
@@ -217,7 +220,7 @@
             oldItemName = event.target.value;
             oldFieldName = undefined;
         }
-        else if (event.target.id.startsWith("editField")) {
+        else if (event.target.id.startsWith("field")) {
             oldFieldName = event.target.value;
             oldItemName = undefined;
         }
@@ -252,8 +255,6 @@
         oldFieldName = undefined;
     }
     
-    var duplicatePrompt = false;
-    
     function submitForm(event) {
         if (undoStack.length === 0 && redoStack.length === 0) {
             addItemElement.value = "";
@@ -264,88 +265,103 @@
             sidebarSection.classList.toggle("displayNone");
             submitSection.classList.toggle("displayNone");
         }
-        else if (!duplicatePrompt) {
+        else {
             var itemChildren = editListSection.children;
             var fieldChildren = sidebarSection.children;
-            var duplicateFound = false;
-
-            var itemNames = Object.create(null);
-            var fieldNames = Object.create(null);
-            var name;
-
-            for (var i = 1, len = itemChildren.length - 1; i < len; ++i) {
-                name = itemChildren[i].firstElementChild.value;
-
-                if (!(name in itemNames)) {
-                    itemNames[name] = { 0: 1 /* length of list */, 1: itemChildren[i].firstElementChild };
-                }
-                else {
-                    itemNames[name][itemNames[name][0] + 1] = itemChildren[i].firstElementChild; // append element to list for later reference
-                    itemNames[name][0] = itemNames[name][0] + 1; // increment length of list
-
-                    duplicateFound = true;
+            
+//            removeDuplicates();
+            
+            var submitForm = document.getElementById("submitform");
+            
+            // append items
+            for (var j = 1, len = itemChildren.length - 1; j < len; ++j) {
+                itemChildren[j].firstElementChild.name = itemChildren[j].firstElementChild.id;
+                submitForm.appendChild(itemChildren[j].firstElementChild);
+            }
+            
+            var sepOne = document.createElement("input");
+            sepOne.name = " ";
+            submitForm.appendChild(sepOne);
+            
+            // append fields
+            for (j = 1, len = fieldChildren.length - 1; j < len; ++j) {
+                fieldChildren[j].firstElementChild.name = fieldChildren[j].firstElementChild.id;
+                submitForm.appendChild(fieldChildren[j].firstElementChild);
+            }
+            
+            var sepTwo = document.createElement("input");
+            sepTwo.name = "  ";
+            submitForm.appendChild(sepTwo);
+            
+            // append elements are to be deleted
+            for (var k = 0, len = undoStack.length; k < len; ++k) {
+                if (undoStack[k][0] === "removeitem" && undoStack[k][2].firstElementChild.id < origNextItemId) {
+                    var itemToDelete = undoStack[k][2].firstElementChild;
+                    itemToDelete.name = itemToDelete.id;
+                    itemToDelete.value = "";
+                    submitForm.appendChild(itemToDelete);
                 }
             }
-
-            for (i = 1, len = fieldChildren.length - 1; i < len; ++i) {
-                name = fieldChildren[i].firstElementChild.value;
-
-                if (!(name in fieldNames)) {
-                    fieldNames[name] = { 0: 1 /* length of list */, 1: fieldChildren[i].firstElementChild };
-                }
-                else {
-                    fieldNames[name][fieldNames[name][0] + 1] = fieldChildren[i].firstElementChild; // append element to list
-                    fieldNames[name][0] = fieldNames[name][0] + 1; // increment length of list
-
-                    duplicateFound = true;
-                }
-            }
-
-            for (name in itemNames) {
-                len = itemNames[name][0];
-                if (len > 1) {
-                    for (i = 1; i <= len; ++i) {
-                        itemNames[name][i].classList.toggle("duplicate");
-                    }
-                }
-            }
-
-            for (name in fieldNames) {
-                len = fieldNames[name][0];
-                if (len > 1) {
-                    for (i = 1; i <= len; ++i) {
-                        fieldNames[name][i].classList.toggle("duplicate");
-                    }
-                }
-            }
-
-            if (duplicateFound) {
-                document.getElementById("dupMsg").classList.toggle("displayNone");
-                duplicatePrompt = true;
-            }
+            
+//            submitForm.enctype = "text/plain";
+//            submitForm.enctype = "multipart/form-data";
+            submitForm.submit(); // server will handle determining which ones are already present and 
         }
-        else {
-            document.getElementById("dupMsg").classList.toggle("displayNone");
-            duplicatePrompt = false;
-        }
-            
-            
-            // if duplicates are found
-                // highlight duplicates and inform user there are duplicates
-                // if the user does not make any changes to any names or does not delete anything and then just submits the form with duplicates
-                    // then allow
-                // else if the user makes any changes to any names or deletes something
-                    // then check for duplicates again
-            // else
-                // prepare the form and submit it
-                
-            // ALSO REMEMBER TO EMPTY THE STACKS AND RESET EVERYTHING ELSE THAT NEEDS TO
-        
-            
-        
-        
-        
     }
+    
+    function removeDuplicates() {
+        var itemChildren = editListSection.children;
+        var fieldChildren = sidebarSection.children;
+
+        var itemNames = Object.create(null);
+        var fieldNames = Object.create(null);
+        var name;
+
+        for (var i = 1, len = itemChildren.length - 1; i < len; ++i) {
+            name = itemChildren[i].firstElementChild.value;
+
+            if (!(name in itemNames)) {
+                itemNames[name] = { 0: 1 /* length of list */, 1: itemChildren[i].firstElementChild };
+            }
+            else {
+                itemNames[name][itemNames[name][0] + 1] = itemChildren[i].firstElementChild; // append element to list for later reference
+                itemNames[name][0] = itemNames[name][0] + 1; // increment length of list
+            }
+        }
+
+        for (i = 1, len = fieldChildren.length - 1; i < len; ++i) {
+            name = fieldChildren[i].firstElementChild.value;
+
+            if (!(name in fieldNames)) {
+                fieldNames[name] = { 0: 1 /* length of list */, 1: fieldChildren[i].firstElementChild };
+            }
+            else {
+                fieldNames[name][fieldNames[name][0] + 1] = fieldChildren[i].firstElementChild; // append element to list
+                fieldNames[name][0] = fieldNames[name][0] + 1; // increment length of list
+            }
+        }
+
+        for (name in itemNames) {
+            len = itemNames[name][0];
+            if (len > 1) {
+                for (i = 2; i <= len; ++i) {
+                    itemNames[name][i].parentElement.parentElement.removeChild(itemNames[name][i].parentElement);
+//                        itemNames[name][i].classList.toggle("duplicate");
+                }
+            }
+        }
+
+        for (name in fieldNames) {
+            len = fieldNames[name][0];
+            if (len > 1) {
+                for (i = 2; i <= len; ++i) {
+                    fieldNames[name][i].parentElement.parentElement.removeChild(fieldNames[name][i].parentElement);
+//                        fieldNames[name][i].classList.toggle("duplicate");
+                }
+            }
+        }
+    }
+    
     
     document.addEventListener("keydown", toggleMode, false);
     

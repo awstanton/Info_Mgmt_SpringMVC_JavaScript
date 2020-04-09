@@ -35,7 +35,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class SimpleController {
     
     private static final Logger logger = Logger.getLogger(SimpleController.class);
-       
+    
+    private static HashMap<String,Character> asciiCodes = new HashMap<>();
+    
     @Autowired
     @Qualifier("util")
     private Util util;
@@ -64,6 +66,39 @@ public class SimpleController {
         }
         util.setNextListId(simpleService.getNextListId()); // to be replaced
         util.setNextItemId(simpleService.getNextItemId()); // to be replaced
+        
+        asciiCodes.put("21", '!');
+        asciiCodes.put("22", '"');
+        asciiCodes.put("23", '#');
+        asciiCodes.put("24", '$');
+        asciiCodes.put("25", '%');
+        asciiCodes.put("26", '&');
+        asciiCodes.put("27", '\'');
+        asciiCodes.put("28", '(');
+        asciiCodes.put("29", ')');
+        asciiCodes.put("2A", '*');
+        asciiCodes.put("2B", '+');
+        asciiCodes.put("2C", ',');
+        asciiCodes.put("2D", '-');
+        asciiCodes.put("2E", '.');
+        asciiCodes.put("2F", '/');
+        asciiCodes.put("3A", ':');
+        asciiCodes.put("3B", ';');
+        asciiCodes.put("3C", '<');
+        asciiCodes.put("3D", '=');
+        asciiCodes.put("3E", '>');
+        asciiCodes.put("3F", '?');
+        asciiCodes.put("40", '@');
+        asciiCodes.put("5B", '[');
+        asciiCodes.put("5C", '\\');
+        asciiCodes.put("5D", ']');
+        asciiCodes.put("5E", '^');
+        asciiCodes.put("5F", '_');
+        asciiCodes.put("60", '`');
+        asciiCodes.put("7B", '{');
+        asciiCodes.put("7C", '|');
+        asciiCodes.put("7D", '}');
+        asciiCodes.put("7E", '~');
     }
     
     /* Handlers for Lists Page */
@@ -102,7 +137,7 @@ public class SimpleController {
             }
         }
 
-        System.out.println("currentList.outline = " + currentList.getOutline());
+//        System.out.println("currentList.outline = " + currentList.getOutline());
         
         ModelAndView mv = new ModelAndView();
         
@@ -128,14 +163,132 @@ public class SimpleController {
         return "redirect:/";
     }
     
-    public String updateList(@RequestBody String body) {
-        int listId = 0;
-        // parse body
+    
+    @RequestMapping(path = "/updateList/{listId}", method = RequestMethod.POST)
+    public String updateList(@PathVariable("listId") int listId, @RequestBody String body) {
+        ArrayList<Integer> addItemIds = new ArrayList<>();
+        ArrayList<String> addItemVals = new ArrayList<>();
+        ArrayList<Integer> editItemIds = new ArrayList<>();
+        ArrayList<String> editItemVals = new ArrayList<>();
+        ArrayList<String> fieldList = new ArrayList<>();
+        ArrayList<Integer> delItemIds = new ArrayList<>();
+        
+        int bodySection = 1;
+        int bodyLength = body.length();
+        int index = 0;
+        int tokenStartIndex = -1;
+        boolean existing = false;
+        Integer currItemId = -1;
+        
+        if (body.charAt(index) == '+') {
+            bodySection = 2;
+            index += 3; // skip "=&"
+        }
+        
+        
+        while (bodySection == 1) {
+            
+            if (body.charAt(index) == '+') {
+                bodySection = 2;
+                index += 3; // skip "=&"
+                break;
+            }
+            
+            tokenStartIndex = index;
+
+            while (body.charAt(index) != '=') {
+                ++index;
+            }
+            
+            currItemId = Integer.parseInt(body.substring(tokenStartIndex, index));
+            
+            if (util.getItems().containsKey(currItemId)) {
+                editItemIds.add(currItemId);
+                existing = true;
+            }
+            else {
+                addItemIds.add(currItemId);
+            }
+            ++index; // advance past '='
+            
+            tokenStartIndex = index;
+            
+            while (body.charAt(index) != '&') {
+                ++index;
+            }
+            
+            if (existing) {
+                editItemVals.add(body.substring(tokenStartIndex, index));
+                existing = false;
+            }
+            else {
+                addItemVals.add(body.substring(tokenStartIndex, index));
+            }
+            
+            ++index; // advance past '&'
+
+        }
+        
+        
+        if (body.charAt(index) == '+') {
+            bodySection = 3;
+            index += 4; // skip "+=&"
+        }
+        
+        
+        while (bodySection == 2) {
+            if (body.charAt(index) == '+') {
+                bodySection = 3;
+                index += 4; // skip "+=&"
+                break;
+            }
+            
+            while (body.charAt(index) != '=') {
+                ++index;
+            }
+            
+            ++index; // advance past '='
+            
+            tokenStartIndex = index;
+            
+            while (body.charAt(index) != '&') {
+                ++index;
+            }
+            
+            fieldList.add(body.substring(tokenStartIndex, index));
+            
+            ++index; // advance past '&'
+            
+        }
+        
+        
+        while (bodySection == 3 && index < bodyLength) {
+            
+            tokenStartIndex = index;
+            
+            while (index < bodyLength && body.charAt(index) != '=') {
+                ++index;
+            }
+            
+            currItemId = Integer.parseInt(body.substring(tokenStartIndex, index));
+            
+            delItemIds.add(currItemId);
+            
+            index += 2; // skip past "=&"
+            
+        }
+
+        
+        System.out.println("updateList body:\n" + body);
+        // take one character at a time. construct an array of strings (even are the ids and odd are the values)
+        // send array to service to insert values for specified ids into the database
+        // once "edit" is found, items are done
+        // for fields, take one character at a time (let 0 - 9 be ids reserved for fields)
+        // when constructing ArrayLists, compare with util to ensure 
         // update database
         // update util
         return "redirect:/showlist/" + listId;
     }
-    
     
     
     @RequestMapping(path = "/updateListNames", method = RequestMethod.POST)

@@ -39,6 +39,7 @@ public class SimpleItem {
     public ArrayList<String> getInfo() {
         return info;
     }
+    
     public void setItemid(int itemid) {
         this.itemid = itemid;
     }
@@ -51,12 +52,11 @@ public class SimpleItem {
     public void setRanking(int ranking) {
         this.ranking = ranking;
     }
-    public void addInfoAttribute(String attribute) {
-        info.add(attribute);
-    }
-    
     public void setInfo(ArrayList<String> info) {
         this.info = info;
+    }
+    public void addInfoAttribute(String attribute) {
+        info.add(attribute);
     }
     
     @Override

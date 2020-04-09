@@ -213,16 +213,32 @@ public class SimpleController {
             
             tokenStartIndex = index;
             
+            StringBuffer buffer = new StringBuffer();
+            
             while (body.charAt(index) != '&') {
-                ++index;
+                if (body.charAt(index) == '+') {
+                    buffer.append(' ');
+                    ++index;
+                }
+                else if (body.charAt(index) == '%') {
+                    String specChar = body.substring(index + 1, index + 3);
+                    if (asciiCodes.containsKey(specChar)) {
+                        buffer.append(asciiCodes.get(specChar).charValue());
+                        index += 3;
+                    }
+                }
+                else {
+                    buffer.append(body.charAt(index));
+                    ++index;
+                }
             }
             
             if (existing) {
-                editItemVals.add(body.substring(tokenStartIndex, index));
+                editItemVals.add(buffer.toString());
                 existing = false;
             }
             else {
-                addItemVals.add(body.substring(tokenStartIndex, index));
+                addItemVals.add(buffer.toString());
             }
             
             ++index; // advance past '&'
@@ -251,11 +267,27 @@ public class SimpleController {
             
             tokenStartIndex = index;
             
+            StringBuffer buffer = new StringBuffer();
+            
             while (body.charAt(index) != '&') {
-                ++index;
+                if (body.charAt(index) == '+') {
+                    buffer.append(' ');
+                    ++index;
+                }
+                else if (body.charAt(index) == '%') {
+                    String specChar = body.substring(index + 1, index + 3);
+                    if (asciiCodes.containsKey(specChar)) {
+                        buffer.append(asciiCodes.get(specChar).charValue());
+                        index += 3;
+                    }
+                }
+                else {
+                    buffer.append(body.charAt(index));
+                    ++index;
+                }
             }
             
-            fieldList.add(body.substring(tokenStartIndex, index));
+            fieldList.add(buffer.toString());
             
             ++index; // advance past '&'
             

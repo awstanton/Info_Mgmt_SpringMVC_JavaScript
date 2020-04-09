@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -132,6 +134,26 @@ public class SimpleController {
 
         for (SimpleItem item : util.getItems().values()) { // to be replaced
 //            System.out.println("item listid = " + item.getListid() + ", item name = " + item.getName());
+
+//            Pattern p = Pattern.compile("\\\\\\\\");
+//            Matcher m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("\\\\"));
+//            p = Pattern.compile("&");
+//            m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("&amp"));
+//            p = Pattern.compile("\\\\\"");
+//            m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("&quot"));
+//            p = Pattern.compile("\\\\\'");
+//            m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("&#39"));
+            
+            
+
+            item.setName(item.getName().replaceAll("\\\\\\\\", "\\\\"));
+            item.setName(item.getName().replaceAll("\\\\\"", "\""));
+            item.setName(item.getName().replaceAll("\\\\\'", "\'"));
+            
             if (item.getListid() == id) {
                 listOfItems.add(item);
             }
@@ -203,7 +225,6 @@ public class SimpleController {
             currItemId = Integer.parseInt(body.substring(tokenStartIndex, index));
             
             if (util.getItems().containsKey(currItemId)) {
-                editItemIds.add(currItemId);
                 existing = true;
             }
             else {
@@ -223,7 +244,11 @@ public class SimpleController {
                 else if (body.charAt(index) == '%') {
                     String specChar = body.substring(index + 1, index + 3);
                     if (asciiCodes.containsKey(specChar)) {
-                        buffer.append(asciiCodes.get(specChar).charValue());
+                        char code = asciiCodes.get(specChar);
+                        if (code == '\'' || code == '\"' || code == '\\') {
+                            buffer.append('\\');
+                        }
+                        buffer.append(code);
                         index += 3;
                     }
                 }
@@ -234,7 +259,10 @@ public class SimpleController {
             }
             
             if (existing) {
-                editItemVals.add(buffer.toString());
+                if (!util.getItems().get(currItemId).getName().equals(buffer.toString())) { // add to edit only if it was edited
+                    editItemIds.add(currItemId);
+                    editItemVals.add(buffer.toString());
+                }
                 existing = false;
             }
             else {
@@ -277,7 +305,17 @@ public class SimpleController {
                 else if (body.charAt(index) == '%') {
                     String specChar = body.substring(index + 1, index + 3);
                     if (asciiCodes.containsKey(specChar)) {
-                        buffer.append(asciiCodes.get(specChar).charValue());
+                        char code = asciiCodes.get(specChar);
+                        if (code == '\'' || code == '\\' || code == '\"') {
+                            buffer.append('\\');
+                        }
+                        buffer.append(code);
+                        if (code == '%') { // %0 represents %
+                            buffer.append('0');
+                        }
+                        else if (code == ':') { // %1 represents :
+                            buffer.append('1');
+                        }
                         index += 3;
                     }
                 }
@@ -310,6 +348,8 @@ public class SimpleController {
             
         }
 
+        simpleService.updateList(listId, addItemIds, addItemVals, editItemIds, editItemVals, fieldList, delItemIds);
+        
         
         System.out.println("updateList body:\n" + body);
         // take one character at a time. construct an array of strings (even are the ids and odd are the values)

@@ -115,5 +115,19 @@ public class SimpleDAO {
         String sql = "SELECT info FROM items WHERE itemid = " + itemId;
         return jdbcTemplate.queryForObject(sql, String.class);
     }
+    
+    ////
+    
+    public boolean setFields(int listId, String fields) {
+        String sql = "UPDATE lists SET itemOutline = '" + fields + "' WHERE listId = " + listId;
+        return jdbcTemplate.update(sql) > 0;
+    }
+    
+    public void addItemToList(int listId, int itemId, String itemValue) {
+        String sql = "INSERT INTO items VALUES (" + itemId + ",'" + itemValue + "'," + listId + ",0,'')";
+        jdbcTemplate.update(sql);
+    }
+    
+    
 }
 

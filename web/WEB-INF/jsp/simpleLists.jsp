@@ -15,35 +15,42 @@
     </head>
 
     <body>
-        <div> <!-- List of Lists -->
+        <! -- &vellip; -->
+        <div id="lsttopbar" class="topbar">
+            <input id="srchbox" class="srchbox" placeholder="Search"/>
+            <a id="mnubtn" class="mnubtn" href="#">&equiv;</a>
+        </div>
+        <div id="lstlst" class="viewItemList">
             <h2>Your Lists</h2>
-            <c:forEach var="list" items="${listOfLists}">
-                <li>
-                    <!-- Interactive List Name -->
-                    <a id="${list.listid}" contentEditable="false" href="${contextPath}/showlist/${list.listid}" target="_self">${list}</a>
-                    <!-- Delete List --> <!-- Note: id only used in commented out part of javascript -->
-                    <form id="delform" type="hidden" method="post" action="dellist/${list.listid}" class="inlineblock">
-                        <input id="delbtn${list.listid}" type="hidden" class="red" value="-"/>
-                    </form>
+            <c:forEach var="list" items="${listOfLists}" varStatus="counter">
+                <li style="margin-bottom: 10px">
+                    <div class="lstnamwrp">
+                        <a id="${list.listid}" class="lstnam" contentEditable="false" href="${contextPath}/showlist/${list.listid}">${list}</a><!--
+                        --><form id="delform${counter.count}" class="lstdelfrm" method="post" action="dellist/${list.listid}">
+                            <input id="delbtn${list.listid}" class="red lstbtn displayNone" type="submit" value="X">
+                        </form>
+                    </div>
                 </li>
             </c:forEach>
+                
+            <li style="margin-bottom: 20px">
+                <form:form id="listAddForm" class="lstaddfrm" action="addlist/${listId}" method="post" modelAttribute="list">
+                    <form:errors path="name"/>
+                    <form:input id="listAddBox" class="lstaddbox displayNone" placeholder="Add new list" path="name" type="input" maxlength="50" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"/><!--
+                    --><input id="listAddButton" class="green lstbtn displayNone" value="O" type="submit" /><br>
+                </form:form>
+                <c:choose>
+                    <c:when test="${not empty emptyField}">${emptyField}</c:when>
+                    <c:when test="${not empty tooLong}">${tooLong}</c:when>
+                    <c:when test="${not empty duplicateField}">${duplicateField}</c:when>
+                </c:choose>
+            </li>
         </div>
-        <div> <!-- Add List -->
-            <form:form action="addlist/${listId}" method="post" modelAttribute="list">
-                <form:errors path="name"/>
-                <form:input id="addbox" path="name" type="hidden" autocomplete="off"/>
-                <input id="addbtn" type="hidden" value="+" class="green"/><br>
-            </form:form>
-            <c:choose>
-                <c:when test="${not empty emptyField}">${emptyField}</c:when>
-                <c:when test="${not empty tooLong}">${tooLong}</c:when>
-                <c:when test="${not empty duplicateField}">${duplicateField}</c:when>
-            </c:choose>
-        </div>
-        <div> <!-- Update List Names Form; JS script -->
-            <form id="updateform" type="hidden" method="post" action="/SimpleSpringMVC/updateListNames"></form>
-            <script src="${contextPath}/resources/js/events.js"></script>
+        <div>
+            <form id="updateListForm" class="displayNone" method="post" action="/SimpleSpringMVC/updateListNames"></form>
         </div>
             
     </body>
+    <script>var nextListId = <c:out value="${nextListId}"/></script>
+    <script src="${contextPath}/resources/js/simpleLists.js"></script>
 </html>

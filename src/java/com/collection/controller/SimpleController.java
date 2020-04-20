@@ -110,8 +110,6 @@ public class SimpleController {
         
 //      List<SimpleList> listOfLists = simpleService.getAllLists();
         List<SimpleList> listOfLists = new ArrayList<>();
-//        System.out.println("lists size = " + util.getLists().size());
-//        System.out.println("items size = " + util.getItems().size());
         for (SimpleList list : util.getLists().values()) { // to be replaced
             listOfLists.add(list);
         }
@@ -121,6 +119,7 @@ public class SimpleController {
         mv.setViewName("simpleLists");
         mv.addObject("listOfLists", listOfLists);
         mv.addObject("list", emptyList);
+        mv.addObject("nextListId", util.getNextListId());
         return mv;
     }
     
@@ -133,34 +132,11 @@ public class SimpleController {
         List<SimpleItem> listOfItems = new ArrayList<>();
 
         for (SimpleItem item : util.getItems().values()) { // to be replaced
-//            System.out.println("item listid = " + item.getListid() + ", item name = " + item.getName());
-
-//            Pattern p = Pattern.compile("\\\\\\\\");
-//            Matcher m = p.matcher(item.getName());
-//            item.setName(m.replaceAll("\\\\"));
-//            p = Pattern.compile("&");
-//            m = p.matcher(item.getName());
-//            item.setName(m.replaceAll("&amp"));
-//            p = Pattern.compile("\\\\\"");
-//            m = p.matcher(item.getName());
-//            item.setName(m.replaceAll("&quot"));
-//            p = Pattern.compile("\\\\\'");
-//            m = p.matcher(item.getName());
-//            item.setName(m.replaceAll("&#39"));
-            
-            
-
-            item.setName(item.getName().replaceAll("\\\\\\\\", "\\\\"));
-            item.setName(item.getName().replaceAll("\\\\\"", "\""));
-            item.setName(item.getName().replaceAll("\\\\\'", "\'"));
-            
             if (item.getListid() == id) {
                 listOfItems.add(item);
             }
         }
 
-//        System.out.println("currentList.outline = " + currentList.getOutline());
-        
         ModelAndView mv = new ModelAndView();
         
         mv.setViewName("simplelist");
@@ -171,18 +147,25 @@ public class SimpleController {
         return mv;
     }
     
-    @RequestMapping(path = "/addlist", method = RequestMethod.POST)
-    public String addList(@ModelAttribute("list") @Validated SimpleList newList, BindingResult result, final RedirectAttributes redirectAttributes) {
+    
+    @RequestMapping(path = "/showitem/{itemId}", method = RequestMethod.GET)
+    public ModelAndView showItem(@PathVariable("itemId") int itemId) {
         
-        if (!result.hasErrors() && !(util.getLists().containsKey(newList.getListid()))) { // to be replaced
-            simpleService.addList(newList.getName());
-            newList.setListid(util.postIncrNextListId()); // to be replaced
-            util.getLists().put(newList.getListid(), newList); // to be replaced
-        }
-        else
-            formValidator.updateModel(redirectAttributes);
+//        SimpleItem currentItem = simpleService.getItemById(itemId);
+        SimpleItem currentItem = util.getItems().get(itemId); // to be replaced
         
-        return "redirect:/";
+        
+        // GET LIST OUTLINE USING THE LISTID
+        // GET ITEM ATTRIBUTES
+        // COMBINE THE OUTLINE AND ATTRIBUTES AND ADD TO MODEL
+        
+        // parse currentItem's attribute/value list and add the array as string values to ModelAndView
+        
+        ModelAndView mv = new ModelAndView();
+        
+        mv.setViewName("simpleitem");
+        mv.addObject("currentItem", currentItem);
+        return mv;
     }
     
     
@@ -362,6 +345,20 @@ public class SimpleController {
         return "redirect:/showlist/" + listId;
     }
     
+    @RequestMapping(path = "/addlist", method = RequestMethod.POST)
+    public String addList(@ModelAttribute("list") @Validated SimpleList newList, BindingResult result, final RedirectAttributes redirectAttributes) {
+        
+        if (!result.hasErrors() && !(util.getLists().containsKey(newList.getListid()))) { // to be replaced
+            simpleService.addList(newList.getName());
+            newList.setListid(util.postIncrNextListId()); // to be replaced
+            util.getLists().put(newList.getListid(), newList); // to be replaced
+        }
+        else
+            formValidator.updateModel(redirectAttributes);
+        
+        return "redirect:/";
+    }
+    
     
     @RequestMapping(path = "/updateListNames", method = RequestMethod.POST)
     public String updateListNames(@RequestBody String str) {
@@ -391,29 +388,8 @@ public class SimpleController {
         util.getLists().remove(listId); // to be replaced
         return "redirect:/";
     }
-    
-    
-    /* Handlers for Items Page */
-    @RequestMapping(path = "/showitem/{itemId}", method = RequestMethod.GET)
-    public ModelAndView showItem(@PathVariable("itemId") int itemId) {
-        
-//        SimpleItem currentItem = simpleService.getItemById(itemId);
-        SimpleItem currentItem = util.getItems().get(itemId); // to be replaced
-        
-        
-        // GET LIST OUTLINE USING THE LISTID
-        // GET ITEM ATTRIBUTES
-        // COMBINE THE OUTLINE AND ATTRIBUTES AND ADD TO MODEL
-        
-        // parse currentItem's attribute/value list and add the array as string values to ModelAndView
-        
-        ModelAndView mv = new ModelAndView();
-        
-        mv.setViewName("showitem");
-        mv.addObject("currentItem", currentItem);
-        return mv;
-    }
-    
+}
+    /*
     @RequestMapping(path = "/additem/{listId}", method = RequestMethod.POST)
     public String addItem(@PathVariable("listId") int listId, @ModelAttribute("newItem") @Validated SimpleItem newItem, BindingResult result, final RedirectAttributes redirectAttributes) {
         
@@ -457,6 +433,8 @@ public class SimpleController {
         util.getItems().remove(itemId); // to be replaced
         return "redirect:/showlist/" + listId;
     }
+    */
+    
     /*
     @RequestMapping(path = "/updateOutline/{listId}", method = RequestMethod.POST)
     public String updateOutline(@PathVariable("listId") int listId) {
@@ -478,7 +456,7 @@ public class SimpleController {
     
     
     
-}
+
 
 
     /*
@@ -489,3 +467,21 @@ public class SimpleController {
         return mv;
     }
     */
+
+
+//            Pattern p = Pattern.compile("\\\\\\\\");
+//            Matcher m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("\\\\"));
+//            p = Pattern.compile("&");
+//            m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("&amp"));
+//            p = Pattern.compile("\\\\\"");
+//            m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("&quot"));
+//            p = Pattern.compile("\\\\\'");
+//            m = p.matcher(item.getName());
+//            item.setName(m.replaceAll("&#39"));
+            
+//            item.setName(item.getName().replaceAll("\\\\\\\\", "\\\\"));
+//            item.setName(item.getName().replaceAll("\\\\\"", "\""));
+//            item.setName(item.getName().replaceAll("\\\\\'", "\'"));

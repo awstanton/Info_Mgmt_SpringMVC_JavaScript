@@ -132,10 +132,6 @@ li {
     flex-direction: column;
 }
 
-.displayNone {
-    display: none;
-}
-
 .linethrough {
     text-decoration: line-through;
     color: gray;
@@ -159,3 +155,101 @@ li {
     color: inherit;
     text-decoration: inherit;
 }*/
+
+.topbar  {
+    text-align: right;
+    font-size: 2em;
+    background-color: #87CEFA;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    border-bottom: 1px solid blue;
+    z-index: 2;
+}
+
+.srchbox {
+    vertical-align: 50%;
+    border-style: none;
+}
+
+.mnubtn {
+    background-color: inherit;
+    margin: 5px;
+}
+
+/*.viewLstLst * {
+    text-align: center;
+    font-size: 12px;
+    line-height: 200%;
+    word-wrap: break-word;
+}*/
+
+#lstlst {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: 38px;
+    display: flex;
+    flex-direction: column;
+}
+
+.lstnam {
+    vertical-align: middle;
+    display: inline-block;
+    padding: 1px;
+    width: calc(100% - 30px);
+}
+
+.lstdelfrm {
+    display: inline-block;
+    vertical-align: middle;
+    height: 26px;
+}
+
+.lstbtn {
+    height: 26px;
+    width: 22px;
+    padding: 0px;
+    font-size: 0.5em;
+    display: inline;
+    vertical-align: top;
+}
+
+.lstaddfrm {
+    display: inline-block;
+    box-sizing: content-box;
+    vertical-align: top;
+    width: calc(50% - 28px);
+    text-align: left;
+}
+
+.lstaddbox {
+    display: inline-block;
+    box-sizing: content-box;
+    padding: 1px;
+    vertical-align: top;
+    width: calc(100% - 30px);
+}
+
+#listAddButton {
+    vertical-align: middle;
+}
+
+.textboxstyle {
+    border: 2px inset #EBE9ED;
+}
+
+.lstnamwrp {
+    text-align: left;
+    width: calc(50% - 24px - 5px + 1px);
+    display: inline-block;
+}
+
+.inlineBlock {
+    display: inline-block;
+}
+
+.displayNone {
+    display: none;
+}

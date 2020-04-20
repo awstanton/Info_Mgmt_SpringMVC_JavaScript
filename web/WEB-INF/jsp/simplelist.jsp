@@ -27,13 +27,13 @@
             
             <c:forEach var="item" items="${listOfItems}">
                 <li>
-                    <input id="${item.itemid}" value="${item}" type="text" contentEditable="true" maxlength="50" spellcheck="false" href="${contextPath}/showitem/${item.itemid}" class="item"/><!--
+                    <input id="${item.itemid}" value="${item}" type="text" contentEditable="true" maxlength="50" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" href="${contextPath}/showitem/${item.itemid}" class="item"/><!--
                  --><input id="delitm${item.itemid}" value="X" type="button" class="itmbtn red"/>
                 </li>
             </c:forEach>
             
             <div id="addItemSection">
-                <input id="addItm" placeholder="Add New Item" maxlength="50" type="text" class="item"/><!--
+                <input id="addItm" placeholder="Add New Item" maxlength="50" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" type="text" class="item"/><!--
              --><input id="addItmBtn" value="O" type="button" class="itmbtn green"/>
             </div>
         </div>
@@ -48,7 +48,7 @@
                 </div>
             </c:forEach>
             <div id="addFieldSection">
-                <input id="addFld" placeholder="Add New Field" maxlength="50" type="text"/><!--
+                <input id="addFld" placeholder="Add New Field" maxlength="50" type="text" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"/><!--
              --><input id="addFldBtn" value="O" type="button" class="fldbtn green"/><br>
             </div>
             
